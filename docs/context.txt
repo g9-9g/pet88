@@ -1,0 +1,86 @@
+Chủ đề 05. Hệ thống quản lý trung tâm chăm sóc thú cưng
+1. Mô tả
+Giữa lòng xã hội bận rộn, tấp nập như hiện nay thì chúng ta rất dễ rơi vào cảm giác trống rỗng,
+chính vì thế mà ngày càng có nhiều người chọn nuôi thú cưng để giải tỏa cảm giác căng thẳng, mệt
+mỏi và cô đơn. Thú cưng đang dần trở thành người bạn thân thiết của những ai yêu thích động vật,
+họ có thể tâm sự với thú cưng rất nhiều chuyện xung quanh cuộc sống và dành cho thú cưng cái tên
+gọi xưng hô thân mật như những thành viên trong gia đình.
+Để hỗ trợ chủ nuôi trong việc theo dõi sức khỏe, sử dụng dịch vụ chăm sóc và quản lý thú cưng
+một cách hiệu quả, hệ thống quản lý trung tâm chăm sóc thú cưng được phát triển. Hệ thống đóng vai
+trò là cầu nối giữa trung tâm chăm sóc thú cưng, các bác sĩ thú y và chủ nuôi, cung cấp đầy đủ các
+thông tin cần thiết về thú cưng cũng như các dịch vụ chăm sóc.
+Hệ thống cho phép các trung tâm chăm sóc thú cưng quản lý thông tin về từng thú cưng được
+đăng ký, cung cấp dịch vụ khám chữa bệnh, làm đẹp, lưu trú và các dịch vụ liên quan khác. Chủ nuôi
+có thể dễ dàng theo dõi tình trạng sức khỏe, đặt lịch hẹn với bác sĩ thú y, sử dụng các dịch vụ và nhận
+thông báo nhắc nhở về lịch tái khám hoặc các nhu cầu chăm sóc đặc biệt của thú cưng.
+2. Đối tượng sử dụng hệ thống
+Hệ thống được xây dựng để phục vụ các nhóm đối tượng sau:
+• Chủ nuôi thú cưng: Đăng ký thông tin thú cưng, đặt lịch khám, sử dụng các dịch vụ chăm sóc
+và theo dõi sức khỏe thú cưng.
+• Nhân viên trung tâm chăm sóc thú cưng: Quản lý lịch hẹn, hồ sơ thú cưng, cung cấp dịch vụ
+chăm sóc, làm đẹp và lưu trú.
+• Bác sĩ thú y: Chẩn đoán, kê đơn thuốc, cập nhật tình trạng sức khỏe thú cưng và lưu trữ hồ
+sơ bệnh án.
+• Quản trị viên hệ thống: Quản lý tài khoản, theo dõi hoạt động của trung tâm, thống kê dữ liệu
+và tối ưu hệ thống.
+3. Một số chức năng chính
+(sinh viên có thể khảo sát thêm các hệ thống hoặc sản phẩm tương tự nhằm đề xuất thêm các chức
+năng bổ sung nếu có)
+3.1. Quản lý thông tin thú cưng
+Mỗi thú cưng được chủ nuôi đăng ký trên hệ thống sẽ có hồ sơ riêng bao gồm:
+• Thông tin cơ bản: Tên, tuổi, giới tính, giống loài, màu lông, hình ảnh nhận diện.
+• Tình trạng sức khỏe: Tiền sử bệnh án, lịch sử tiêm chủng, các dị ứng hoặc bệnh mãn tính.
+• Chế độ dinh dưỡng: Loại thức ăn phù hợp, khẩu phần ăn và các lưu ý đặc biệt.
+• Lịch sử dịch vụ: Tóm tắt các lần khám bệnh, làm đẹp, trông giữ.Hệ thống giúp bác sĩ và nhân viên trung tâm truy cập nhanh chóng vào thông tin thú cưng mà không
+cần chủ nuôi mang theo giấy tờ.
+3.2. Quản lý khám chữa bệnh thú cưng
+Hệ thống hỗ trợ quy trình khám chữa bệnh từ lúc đăng ký đến khi hoàn tất điều trị:
+1. Đăng ký khám bệnh: Chủ nuôi có thể đặt lịch khám qua hệ thống.
+2. Chuẩn đoán và xét nghiệm: Bác sĩ cập nhật kết quả khám, xét nghiệm lên hệ thống.
+3. Kê đơn thuốc: Lưu trữ đơn thuốc và hướng dẫn sử dụng cho chủ nuôi.
+4. Tái khám: Hệ thống tự động nhắc lịch tái khám nếu có chỉ định từ bác sĩ.
+5. Cảnh báo sức khỏe: Hệ thống gửi thông báo nếu phát hiện các triệu chứng bất thường.
+3.3. Quản lý dịch vụ làm đẹp và vệ sinh thú cưng
+Trung tâm cung cấp các dịch vụ như tắm gội, cắt tỉa lông, chăm sóc móng, massage, spa thú cưng.
+• Đăng ký dịch vụ: Chủ nuôi có thể đặt lịch trước hoặc sử dụng dịch vụ trực tiếp.
+• Theo dõi quy trình thực hiện: Nhân viên cập nhật tình trạng dịch vụ trên hệ thống.
+• Lịch sử dịch vụ: Lưu trữ thông tin để tư vấn cho chủ nuôi về các dịch vụ tiếp theo.
+3.4. Quản lý dịch vụ lưu trú (khách sạn thú cưng)
+Hệ thống hỗ trợ đặt phòng cho thú cưng khi chủ nuôi có nhu cầu gửi thú cưng trong thời gian ngắn
+hoặc dài hạn.
+• Quản lý đặt phòng: Kiểm tra phòng trống, xác nhận đặt chỗ.
+• Quản lý lưu trú: Theo dõi tình trạng của thú cưng trong suốt thời gian lưu trú.
+• Chế độ ăn uống và chăm sóc đặc biệt: Nhập thông tin yêu cầu từ chủ nuôi.
+• Thông báo và cập nhật: Gửi hình ảnh và tình trạng thú cưng để chủ nuôi theo dõi từ xa.
+3.5. Hệ thống nhắc nhở và thông báo
+Hệ thống sẽ gửi thông báo đến chủ nuôi và nhân viên trung tâm khi có sự kiện quan trọng như:
+• Nhắc lịch tái khám, tiêm chủng, cắt tỉa lông định kỳ.
+• Cảnh báo về tình trạng sức khỏe của thú cưng.
+• Nhắc nhở về lịch đón thú cưng sau khi lưu trú.
+3.6. Quản lý tài khoản và quyền hạn
+Hệ thống phân quyền sử dụng theo vai trò:
+• Chủ nuôi: Đăng ký, theo dõi thông tin thú cưng, sử dụng dịch vụ.
+• Nhân viên trung tâm: Xử lý yêu cầu dịch vụ, cập nhật thông tin khám bệnh, chăm sóc.
+• Bác sĩ thú y: Quản lý bệnh án, chẩn đoán và kê đơn thuốc.
+• Quản trị viên: Quản lý tài khoản, kiểm soát dữ liệu, báo cáo thống kê.
+3.7. Báo cáo và thống kê
+Hệ thống cung cấp các báo cáo hỗ trợ trung tâm trong việc quản lý:
+• Thống kê số lượng thú cưng đăng ký theo thời gian.
+• Báo cáo doanh thu từ các dịch vụ.
+• Thống kê lịch sử khám chữa bệnh, dịch vụ sử dụng.
+• Phân tích xu hướng sức khỏe thú cưng (các bệnh phổ biến, tình trạng dinh dưỡng, v.v.).4. Một số quy trình nghiệp vụ điển hình
+Quy trình đặt lịch khám bệnh
+1. Chủ nuôi đăng nhập vào hệ thống và chọn đặt lịch khám.
+2. Chọn loại hình khám bệnh (khám tổng quát, tiêm phòng, xét nghiệm, v.v.).
+3. Hệ thống hiển thị các khung giờ trống để lựa chọn.
+4. Sau khi đặt lịch, hệ thống xác nhận qua email/SMS.
+5. Khi đến trung tâm, nhân viên kiểm tra và xác nhận thông tin.
+6. Bác sĩ tiến hành khám, nhập thông tin chẩn đoán, kê đơn thuốc lên hệ thống.
+7. Chủ nuôi nhận thông tin về lịch tái khám nếu cần.
+Quy trình sử dụng dịch vụ lưu trú
+1. Chủ nuôi đăng ký lưu trú, nhập thông tin thú cưng và thời gian gửi.
+2. Hệ thống kiểm tra phòng trống và hiển thị giá dịch vụ.
+3. Chủ nuôi xác nhận đặt phòng và thanh toán.
+4. Khi thú cưng đến trung tâm, nhân viên tiếp nhận và cập nhật thông tin.
+5. Trong thời gian lưu trú, hệ thống cập nhật tình trạng sức khỏe, ăn uống.
+6. Khi kết thúc lưu trú, chủ nuôi nhận thông báo đến đón thú cưng.

@@ -1,0 +1,88 @@
+@startuml medical-service-usecase
+title Biểu đồ Use Case phân rã - Quản lý dịch vụ khám chữa bệnh
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #FDF5E6
+  BorderColor Black
+  ArrowColor Black
+  FontSize 12
+}
+
+actor "Chủ nuôi" as Owner
+actor "Nhân viên trung tâm" as Staff
+actor "Bác sĩ thú y" as Vet
+actor "Quản trị viên" as Admin
+
+rectangle "Quản lý dịch vụ khám chữa bệnh" {
+  ' Quản lý lịch hẹn
+  usecase "Đặt lịch khám" as UC1
+  usecase "Hủy lịch khám" as UC2
+  usecase "Xem lịch khám" as UC3
+  usecase "Kiểm tra lịch trống" as UC12
+  usecase "Xác nhận lịch hẹn" as UC13
+
+  ' Tiếp nhận và chẩn đoán
+  usecase "Tiếp nhận thú cưng" as UC4
+  usecase "Kiểm tra thông tin thú cưng" as UC14
+  usecase "Chẩn đoán bệnh" as UC5
+  usecase "Lưu hồ sơ bệnh án" as UC15
+
+  ' Điều trị và thuốc
+  usecase "Kê đơn thuốc" as UC6
+  usecase "Lưu kết quả xét nghiệm" as UC7
+  usecase "Quản lý thuốc và vật tư" as UC9
+  usecase "Kiểm tra tồn kho thuốc" as UC16
+  usecase "Cập nhật kho thuốc" as UC17
+
+  ' Theo dõi và báo cáo
+  usecase "Đặt lịch tái khám" as UC8
+  usecase "Xuất báo cáo khám bệnh" as UC10
+  usecase "Thống kê bệnh án" as UC11
+
+  ' Sắp xếp vị trí các actor
+  Owner -[hidden]-> Staff
+  Staff -[hidden]-> Vet
+  Vet -[hidden]-> Admin
+
+  ' Các mối quan hệ include
+  UC1 ..> UC12 : <<include>>
+  UC1 ..> UC13 : <<include>>
+  UC2 ..> UC13 : <<include>>
+  UC4 ..> UC14 : <<include>>
+  UC5 ..> UC15 : <<include>>
+  UC6 ..> UC16 : <<include>>
+  UC6 ..> UC17 : <<include>>
+  UC7 ..> UC15 : <<include>>
+  UC8 ..> UC12 : <<include>>
+  UC8 ..> UC13 : <<include>>
+  UC9 ..> UC16 : <<include>>
+  UC9 ..> UC17 : <<include>>
+  UC10 ..> UC15 : <<include>>
+
+  ' Các mối quan hệ extend
+  UC2 ..|> UC1 : <<extend>>
+  UC8 ..|> UC5 : <<extend>>
+  UC10 ..|> UC5 : <<extend>>
+  UC11 ..|> UC10 : <<extend>>
+
+  ' Các mối quan hệ với actor
+  Owner --> UC1
+  Owner --> UC2
+  Owner --> UC3
+
+  Staff --> UC3
+  Staff --> UC4
+  Staff --> UC10
+
+  Vet --> UC3
+  Vet --> UC5
+  Vet --> UC6
+  Vet --> UC7
+  Vet --> UC8
+  Vet --> UC9
+  Vet --> UC10
+
+  Admin --> UC11
+}
+@enduml 

@@ -1,0 +1,30 @@
+@startuml pet-management
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Quản trị viên" as Admin
+
+rectangle "Quản lý nhóm người dùng" {
+    usecase "Quản lý nhóm theo vai trò" as UC1
+    usecase "Xem danh sách nhóm" as UC2
+    usecase "Thêm người dùng vào nhóm" as UC3
+    usecase "Xóa người dùng khỏi nhóm" as UC4
+    usecase "Cập nhật quyền nhóm" as UC5
+
+    note right of UC1
+        Các nhóm vai trò:
+        - Nhóm chủ nuôi
+        - Nhóm nhân viên
+        - Nhóm bác sĩ
+        - Nhóm quản trị
+    end note
+
+    ' Các mối quan hệ include
+    UC1 ..> UC2 : <<include>>
+    UC1 ..> UC3 : <<include>>
+    UC1 ..> UC4 : <<include>>
+    UC1 ..> UC5 : <<include>>
+
+    Admin --> UC1
+}
+@enduml 

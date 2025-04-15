@@ -1,0 +1,30 @@
+@startuml auth
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Quản trị viên" as Admin
+
+rectangle "Quản lý tài khoản" {
+    usecase "Quản lý tài khoản người dùng" as UC1
+    usecase "Kiểm tra thông tin" as UC2
+    usecase "Khóa/mở khóa tài khoản" as UC3
+    usecase "Phân quyền theo vai trò" as UC4
+    usecase "Kiểm soát dữ liệu" as UC5
+
+    note right of UC4
+        Phân quyền theo vai trò:
+        - Chủ nuôi
+        - Nhân viên trung tâm
+        - Bác sĩ thú y
+        - Quản trị viên
+    end note
+
+    ' Các mối quan hệ include
+    UC1 ..> UC2 : <<include>>
+    UC1 ..> UC3 : <<include>>
+    UC1 ..> UC4 : <<include>>
+
+    Admin --> UC1
+    Admin --> UC5
+}
+@enduml 
