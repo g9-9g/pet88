@@ -1,86 +1,70 @@
 package com.framja.itss.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.framja.itss.dto.UserDto;
+import com.framja.itss.entity.User;
+import com.framja.itss.repository.UserRepository;
+import com.framja.itss.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import com.framja.itss.model.User;
-import com.framja.itss.service.JwtService;
-import com.framja.itss.service.UserService;
+import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final Map<Long, User> users = new HashMap<>();
-    private Long nextId = 1L;
-
-    @Autowired
-    private JwtService jwtService;
-
+    
+    private final UserRepository userRepository;
+    
     @Override
-    public User register(String username, String password) {
-        User user = new User(nextId++, username, password);
-        users.put(user.getId(), user);
-        return user;
+    public User createUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public String login(String username, String password) {
-        User user = users.values().stream()
-                .filter(u -> u.getUsername().equals(username) && u.getPassword().equals(password))
-                .findFirst()
-                .orElse(null);
-        
-        if (user != null) {
-            return jwtService.generateToken(user);
-        }
-        return null;
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override
-    public User getUserById(Long id) {
-        return users.get(id);
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
-    public boolean lockUser(Long id) {
-        User user = users.get(id);
-        if (user != null) {
-            user.setLocked(true);
-            return true;
-        }
-        return false;
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     @Override
-    public boolean unlockUser(Long id) {
-        User user = users.get(id);
-        if (user != null) {
-            user.setLocked(false);
-            return true;
-        }
-        return false;
+    public User updateUser(User user) {
+        return userRepository.save(user);
     }
 
     @Override
-    public User updateProfile(Long id, String username, String email, String fullName, String password) {
-        User user = users.get(id);
-        if (user != null) {
-            if (username != null && !username.isEmpty()) {
-                user.setUsername(username);
-            }
-            if (email != null && !email.isEmpty()) {
-                user.setEmail(email);
-            }
-            if (fullName != null && !fullName.isEmpty()) {
-                user.setFullName(fullName);
-            }
-            if (password != null && !password.isEmpty()) {
-                user.setPassword(password);
-            }
-            return user;
-        }
-        return null;
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDto convertToDto(User user) {
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .fullName(user.getFullName())
+                .locked(user.isLocked())
+                .build();
+    }
+
+    @Override
+    public User convertToEntity(UserDto userDto) {
+        return User.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .email(userDto.getEmail())
+                .fullName(userDto.getFullName())
+                .locked(userDto.isLocked())
+                .build();
     }
 } 

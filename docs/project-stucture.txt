@@ -1,0 +1,17 @@
+src/
+└── main/
+    └── java/
+        └── .....
+            ├── controller/       # Xử lý HTTP request/response, giao tiếp với client
+            ├── dto/              # Định nghĩa các lớp Data Transfer Object để truyền dữ liệu giữa các tầng
+            ├── entity/           # Khai báo các lớp ánh xạ bảng trong cơ sở dữ liệu (JPA Entity)
+            ├── repository/       # Interface thao tác với cơ sở dữ liệu, extends JpaRepository/CrudRepository
+            ├── service/          # Định nghĩa interface/logic xử lý nghiệp vụ chính của hệ thống
+            ├── service/impl/     # Chứa các class cài đặt chi tiết cho service interface
+            ├── config/           # Các cấu hình Spring Boot (bảo mật, CORS, Swagger, v.v.)
+            └── ....Application.java  # File khởi tạo ứng dụng Spring Boot chính
+    └── resources/
+        ├── application.yml       # File cấu hình ứng dụng Spring Boot
+        └── ...                   # Các file resource khác (template, static...)
+
+-- folder như exception/ (xử lý lỗi), security/ (bảo mật), util/ (công cụ hỗ trợ)... nếu cần thiếtthiết
