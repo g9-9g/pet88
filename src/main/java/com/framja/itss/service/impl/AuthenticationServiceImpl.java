@@ -5,8 +5,8 @@ import com.framja.itss.dto.AuthResponse;
 import com.framja.itss.dto.RegisterRequest;
 import com.framja.itss.entity.User;
 import com.framja.itss.repository.UserRepository;
+import com.framja.itss.security.JwtTokenProvider;
 import com.framja.itss.service.AuthenticationService;
-import com.framja.itss.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,7 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -42,15 +42,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .email(request.getEmail())
                 .fullName(request.getFullName())
                 .locked(false)
+                .role(request.getRole())
                 .build();
         
         var savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtTokenProvider.generateToken(savedUser);
         
         return AuthResponse.builder()
                 .token(jwtToken)
                 .userId(savedUser.getId())
                 .username(savedUser.getUsername())
+                .role(savedUser.getRole())
                 .build();
     }
 
@@ -70,12 +72,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
         
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtTokenProvider.generateToken(user);
         
         return AuthResponse.builder()
                 .token(jwtToken)
                 .userId(user.getId())
                 .username(user.getUsername())
+                .role(user.getRole())
                 .build();
     }
 } 

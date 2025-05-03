@@ -1,7 +1,9 @@
 package com.framja.itss.dto;
 
+import com.framja.itss.entity.User.RoleName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +27,7 @@ public class RegisterRequest {
     private String email;
     
     private String fullName;
+
+    @NotNull(message = "Vui lòng chọn vai trò")
+    private RoleName role;
 } 

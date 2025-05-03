@@ -1,11 +1,13 @@
 package com.framja.itss.controller;
 
+import com.framja.itss.dto.ChangePasswordRequest;
 import com.framja.itss.dto.UserDto;
 import com.framja.itss.entity.User;
 import com.framja.itss.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +28,7 @@ public class UserController {
     
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        System.out.println("Getting user by ID: " + id);
         return userService.getUserById(id)
                 .map(user -> new ResponseEntity<>(userService.convertToDto(user), HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -39,7 +42,7 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
     
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         if (!id.equals(userDto.getId())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -61,6 +64,16 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, Authentication authentication) {
+        try {
+            String newToken = userService.changePassword(authentication.getName(), request);
+            return ResponseEntity.ok(newToken);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 } 

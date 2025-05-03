@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +35,10 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean locked = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RoleName role;
+
     public User(Long id, String username, String password) {
         this.id = id;
         this.username = username;
@@ -44,7 +48,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return Collections.singletonList(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
@@ -65,5 +69,12 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return !locked;
+    }
+
+    public enum RoleName {
+        ROLE_VET,
+        ROLE_ADMIN,
+        ROLE_PET_OWNER,
+        ROLE_STAFF
     }
 } 
