@@ -1,4 +1,4 @@
-CREATE TABLE pets (
+CREATE TABLE `httc`.`pets` (
     pet_id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
@@ -15,6 +15,6 @@ CREATE TABLE pets (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_user FOREIGN KEY (user_id)
-        REFERENCES users(user_id)
+        REFERENCES `httc`.`users`(user_id)
         ON DELETE CASCADE
 );
