@@ -1,10 +1,10 @@
 package com.framja.itss.pets.service.impl;
 
+import com.framja.itss.common.service.UserQueryService;
 import com.framja.itss.pets.dto.PetDto;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.pets.repository.PetRepository;
-import com.framja.itss.users.repository.UserRepository;
 import com.framja.itss.pets.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PetServiceImpl implements PetService {
     private final PetRepository petRepository;
-    private final UserRepository userRepository;
+    private final UserQueryService userService;
 
     @Override
     @Transactional
     public PetDto createPet(PetDto petDto) {
         System.out.println("Creating pet: " + petDto);
-        User owner = userRepository.findById(petDto.getOwnerId())
+        User owner = userService.getUserById(petDto.getOwnerId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        Pet pet = convertToEntity(petDto, owner);
+        Pet pet = convertToEntity(petDto, petDto.getOwnerId());
         Pet saved = petRepository.save(pet);
         return convertToDto(saved);
     }
@@ -96,7 +96,10 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public Pet convertToEntity(PetDto petDto, User owner) {
+    public Pet convertToEntity(PetDto petDto, Long ownerId) {
+        User owner = userService.getUserById(ownerId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                
         return Pet.builder()
                 .petId(petDto.getPetId())
                 .owner(owner)

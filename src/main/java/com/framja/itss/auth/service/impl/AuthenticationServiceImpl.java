@@ -11,8 +11,8 @@ import com.framja.itss.auth.dto.AuthResponse;
 import com.framja.itss.auth.dto.RegisterRequest;
 import com.framja.itss.auth.security.JwtTokenProvider;
 import com.framja.itss.auth.service.AuthenticationService;
+import com.framja.itss.common.service.UserQueryService;
 import com.framja.itss.users.entity.User;
-import com.framja.itss.users.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-    private final UserRepository userRepository;
+    private final UserQueryService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
@@ -28,26 +28,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         // Kiểm tra nếu username đã tồn tại
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userService.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Tên đăng nhập đã được sử dụng");
         }
         
         // Kiểm tra nếu email đã tồn tại và không rỗng
         if (request.getEmail() != null && !request.getEmail().isEmpty() 
-                && userRepository.existsByEmail(request.getEmail())) {
+                && userService.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã được sử dụng");
         }
         
-        var user = User.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .email(request.getEmail())
-                .fullName(request.getFullName())
-                .locked(false)
-                .role(request.getRole())
-                .build();
+        User savedUser = userService.saveUser(
+            request.getUsername(),
+            request.getPassword(),
+            request.getEmail(),
+            request.getFullName(),
+            request.getRole()
+        );
         
-        var savedUser = userRepository.save(user);
         var jwtToken = jwtTokenProvider.generateToken(savedUser);
         
         return AuthResponse.builder()
@@ -71,7 +69,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException("Tên đăng nhập hoặc mật khẩu không đúng");
         }
         
-        var user = userRepository.findByUsername(request.getUsername())
+        var user = userService.getUserByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
         
         var jwtToken = jwtTokenProvider.generateToken(user);

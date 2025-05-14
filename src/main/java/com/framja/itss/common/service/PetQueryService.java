@@ -1,4 +1,4 @@
-package com.framja.itss.pets.service;
+package com.framja.itss.common.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import com.framja.itss.pets.dto.PetDto;
 import com.framja.itss.pets.entity.Pet;
 
-public interface PetService {
+public interface PetQueryService {
     PetDto createPet(PetDto petDto);
     Optional<PetDto> getPetById(Long petId);
     List<PetDto> getAllPets();

@@ -3,4 +3,4 @@ description:
 globs: 
 alwaysApply: true
 ---
-Code tuân theo cấu trúc sạch đẹp trong [project-stucture.txt](mdc:docs/project-stucture.txt) , Code maintainability
+Code should follow this structure [project-stucture.txt](mdc:docs/project-stucture.txt) , Code maintainability.

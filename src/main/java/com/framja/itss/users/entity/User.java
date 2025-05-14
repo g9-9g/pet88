@@ -7,6 +7,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.framja.itss.common.enums.RoleName;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -79,10 +81,4 @@ public class User implements UserDetails {
         return !locked;
     }
 
-    public enum RoleName {
-        ROLE_VET,
-        ROLE_ADMIN,
-        ROLE_PET_OWNER,
-        ROLE_STAFF
-    }
 } 

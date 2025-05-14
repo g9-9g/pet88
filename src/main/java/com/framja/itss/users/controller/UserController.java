@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.framja.itss.auth.dto.ChangePasswordRequest;
+import com.framja.itss.users.dto.ChangePasswordRequest;
 import com.framja.itss.users.dto.UserDto;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.users.service.UserService;

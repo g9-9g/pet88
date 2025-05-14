@@ -1,4 +1,4 @@
-package com.framja.itss.auth.dto;
+package com.framja.itss.users.dto;
 
 import lombok.Data;
 

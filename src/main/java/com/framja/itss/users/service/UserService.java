@@ -3,7 +3,7 @@ package com.framja.itss.users.service;
 import java.util.List;
 import java.util.Optional;
 
-import com.framja.itss.auth.dto.ChangePasswordRequest;
+import com.framja.itss.users.dto.ChangePasswordRequest;
 import com.framja.itss.users.dto.UserDto;
 import com.framja.itss.users.entity.User;
 

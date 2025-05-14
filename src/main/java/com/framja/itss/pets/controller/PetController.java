@@ -1,7 +1,7 @@
 package com.framja.itss.pets.controller;
 
+import com.framja.itss.common.service.UserQueryService;
 import com.framja.itss.pets.dto.PetDto;
-import com.framja.itss.users.entity.User;
 import com.framja.itss.pets.service.PetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,17 +22,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PetController {
     private final PetService petService;
+    private final UserQueryService userService; // Inject the UserQueryService
 
     @PostMapping
     public ResponseEntity<PetDto> createPet(@RequestBody PetDto petDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
+        Long currentUserId = getCurrentUserId(authentication);
         
         // PET_ADMIN có thể tạo pet cho bất kỳ ai
         boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         
         // PET_OWNER chỉ có thể tạo pet cho chính mình
-        if (!isAdmin && !currentUser.getId().equals(petDto.getOwnerId())) {
+        if (!isAdmin && !currentUserId.equals(petDto.getOwnerId())) {
             throw new AccessDeniedException("You are not authorized to create a pet for another user");
         }
         
@@ -56,10 +57,9 @@ public class PetController {
     @GetMapping("/owned")
     public ResponseEntity<List<PetDto>> getPetsByOwner() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-        Long ownerId = currentUser.getId();
+        Long currentUserId = getCurrentUserId(authentication);
 
-        List<PetDto> pets = petService.getPetsByOwnerId(ownerId);
+        List<PetDto> pets = petService.getPetsByOwnerId(currentUserId);
         return new ResponseEntity<>(pets, HttpStatus.OK);
     }
 
@@ -71,11 +71,11 @@ public class PetController {
         
         // Kiểm tra quyền
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
+        Long currentUserId = getCurrentUserId(authentication);
         boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         
         // PET_OWNER chỉ có thể cập nhật pet của mình
-        if (!isAdmin && !currentUser.getId().equals(existingPet.getOwnerId())) {
+        if (!isAdmin && !currentUserId.equals(existingPet.getOwnerId())) {
             throw new AccessDeniedException("You are not authorized to update this pet");
         }
         
@@ -91,11 +91,11 @@ public class PetController {
         
         // Kiểm tra quyền
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
+        Long currentUserId = getCurrentUserId(authentication);
         boolean isAdmin = authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         
         // PET_OWNER chỉ có thể xóa pet của mình
-        if (!isAdmin && !currentUser.getId().equals(existingPet.getOwnerId())) {
+        if (!isAdmin && !currentUserId.equals(existingPet.getOwnerId())) {
             throw new AccessDeniedException("You are not authorized to delete this pet");
         }
         
@@ -127,5 +127,25 @@ public class PetController {
         response.put("totalPages", petPage.getTotalPages());
         
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    
+    // Helper method to get current user ID from Authentication
+    private Long getCurrentUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AccessDeniedException("User not authenticated");
+        }
+        
+        // Get user ID from principal
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof org.springframework.security.core.userdetails.UserDetails) {
+            // Get username from principal
+            String username = ((org.springframework.security.core.userdetails.UserDetails) principal).getUsername();
+            // Use userService to get the user by username and extract ID
+            return userService.getUserByUsername(username)
+                    .orElseThrow(() -> new AccessDeniedException("User not found"))
+                    .getId();
+        }
+        
+        throw new AccessDeniedException("Invalid authentication principal");
     }
 } 

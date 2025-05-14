@@ -7,18 +7,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.framja.itss.auth.dto.ChangePasswordRequest;
+import com.framja.itss.auth.security.JwtTokenProvider;
+import com.framja.itss.common.enums.RoleName;
+import com.framja.itss.common.service.UserQueryService;
+import com.framja.itss.users.dto.ChangePasswordRequest;
 import com.framja.itss.users.dto.UserDto;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.users.repository.UserRepository;
-import com.framja.itss.auth.security.JwtTokenProvider;
 import com.framja.itss.users.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserQueryService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -94,5 +96,29 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return jwtTokenProvider.generateToken(user);
+    }
+    
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+    
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+    
+    @Override
+    public User saveUser(String username, String password, String email, String fullName, RoleName role) {
+        var user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .email(email)
+                .fullName(fullName)
+                .locked(false)
+                .role(role)
+                .build();
+        
+        return userRepository.save(user);
     }
 } 

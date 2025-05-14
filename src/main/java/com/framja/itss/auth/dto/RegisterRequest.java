@@ -1,6 +1,6 @@
 package com.framja.itss.auth.dto;
 
-import com.framja.itss.users.entity.User.RoleName;
+import com.framja.itss.common.enums.RoleName;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+There are currently five modules in this project: auth, users, pets, grooming, hotel, and medical. Each module should be independent, which means a service in one module cannot directly call another module’s repository or service. It should only be accessed via service interfaces defined in the common folder. Directly using another module’s DTO or entity is allowed but not recommended.

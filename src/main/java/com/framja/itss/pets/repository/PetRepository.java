@@ -10,11 +10,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.framja.itss.pets.entity.Pet;
-import com.framja.itss.users.entity.User;
 
 @Repository
 public interface PetRepository extends JpaRepository<Pet, Long> {
-    List<Pet> findByOwner(User owner);
+
     List<Pet> findByOwner_Id(Long ownerId);
     
     @Query(value = "SELECT p FROM Pet p WHERE p.name LIKE %:name%")
