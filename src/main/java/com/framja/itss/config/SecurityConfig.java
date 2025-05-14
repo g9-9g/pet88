@@ -63,7 +63,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/docs", "/docs/**", "/static/**").permitAll()
                 .requestMatchers("/api/users/**").hasAnyRole("ADMIN")
                 .requestMatchers("/api/tasks/**").hasAnyRole("ADMIN", "STAFF")
-                .requestMatchers("/api/pets/**").hasAnyRole("ADMIN", "VET", "PET_OWNER")
+                .requestMatchers("/api/pets/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService()), 

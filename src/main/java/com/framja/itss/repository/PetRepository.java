@@ -2,6 +2,8 @@ package com.framja.itss.repository;
 
 import com.framja.itss.entity.Pet;
 import com.framja.itss.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,6 +41,20 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
             @Param("ownerId") Long ownerId,
             @Param("sortField") String sortField,
             @Param("sortDir") String sortDir);
+    
+    @Query(value = "SELECT p FROM Pet p WHERE " +
+            "(:name IS NULL OR p.name LIKE %:name%) AND " +
+            "(:species IS NULL OR p.species = :species) AND " +
+            "(:breed IS NULL OR p.breed = :breed) AND " +
+            "(:gender IS NULL OR p.gender = :gender) AND " +
+            "(:ownerId IS NULL OR p.owner.id = :ownerId)")
+    Page<Pet> findPetsWithFiltersAndPagination(
+            @Param("name") String name,
+            @Param("species") String species,
+            @Param("breed") String breed,
+            @Param("gender") String gender,
+            @Param("ownerId") Long ownerId,
+            Pageable pageable);
     
     @Query(value = "SELECT * FROM pets p WHERE " +
             "(:name IS NULL OR p.name LIKE CONCAT('%', :name, '%')) AND " +

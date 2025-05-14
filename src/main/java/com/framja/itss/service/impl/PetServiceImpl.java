@@ -7,6 +7,10 @@ import com.framja.itss.repository.PetRepository;
 import com.framja.itss.repository.UserRepository;
 import com.framja.itss.service.PetService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +27,7 @@ public class PetServiceImpl implements PetService {
     @Override
     @Transactional
     public PetDto createPet(PetDto petDto) {
+        System.out.println("Creating pet: " + petDto);
         User owner = userRepository.findById(petDto.getOwnerId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         Pet pet = convertToEntity(petDto, owner);
@@ -128,5 +133,30 @@ public class PetServiceImpl implements PetService {
         
         // Convert to DTOs
         return pets.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+    
+    @Override
+    public Page<PetDto> getFilteredPetsWithPagination(String name, String species, String breed,
+                                             String gender, Long ownerId,
+                                             String sortField, String sortDir,
+                                             int page, int size) {
+        // Default sort by name ascending if not specified
+        if (sortField == null || sortField.isEmpty()) {
+            sortField = "name";
+        }
+        if (sortDir == null || sortDir.isEmpty()) {
+            sortDir = "asc";
+        }
+        
+        // Tạo Pageable để hỗ trợ phân trang và sắp xếp
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortField);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        
+        // Gọi repository với phân trang
+        Page<Pet> petPage = petRepository.findPetsWithFiltersAndPagination(
+                name, species, breed, gender, ownerId, pageable);
+        
+        // Convert entity page sang DTO page
+        return petPage.map(this::convertToDto);
     }
 } 

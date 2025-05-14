@@ -3,6 +3,7 @@ package com.framja.itss.service;
 import com.framja.itss.dto.pet.PetDto;
 import com.framja.itss.entity.Pet;
 import com.framja.itss.entity.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,8 +18,14 @@ public interface PetService {
     PetDto convertToDto(Pet pet);
     Pet convertToEntity(PetDto petDto, User owner);
     
-    // New method for filtered, sorted, and searched pets
+    // Method for filtered, sorted, and searched pets (without pagination)
     List<PetDto> getFilteredPets(String name, String species, String breed, 
                                 String gender, Long ownerId, 
                                 String sortField, String sortDir);
+    
+    // New method with pagination
+    Page<PetDto> getFilteredPetsWithPagination(String name, String species, String breed,
+                                      String gender, Long ownerId,
+                                      String sortField, String sortDir,
+                                      int page, int size);
 } 

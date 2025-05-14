@@ -9,7 +9,7 @@ CREATE TABLE `httc`.`pets` (
     color VARCHAR(50),
     avatar_url VARCHAR(255),
     health_notes TEXT,
-    vaccination_history JSONB,
+    vaccination_history TEXT,
     nutrition_notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
