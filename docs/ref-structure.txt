@@ -1,0 +1,99 @@
+src/main/java/com/example/petcare/
+├── auth/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   ├── entity/
+│   ├── repository/
+│   ├── security/
+│   │   ├── JwtTokenProvider.java
+│   │   └── SecurityConfig.java
+│   └── mapper/
+│
+├── users/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   ├── entity/
+│   ├── repository/
+│   └── mapper/
+│
+├── pets/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   ├── entity/
+│   ├── repository/
+│   └── mapper/
+│
+├── medical/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   ├── entity/
+│   │   ├── MedicalRequest.java
+│   │   ├── Appointment.java
+│   │   └── Prescription.java
+│   ├── repository/
+│   └── mapper/
+│
+├── grooming/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   ├── entity/
+│   │   └── GroomingRequest.java
+│   ├── repository/
+│   └── mapper/
+│
+├── hotel/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   ├── entity/
+│   │   └── HotelRequest.java
+│   ├── repository/
+│   └── mapper/
+│
+├── notification/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   ├── service/impl/
+│   └── utils/
+│       └── EmailSender.java (hoặc SMS, Push)
+│
+├── report/
+│   ├── controller/
+│   ├── dto/
+│   ├── service/
+│   └── service/impl/
+│
+├── common/
+│   ├── enums/
+│   │   ├── UserRole.java
+│   │   └── RequestStatus.java
+│   ├── service/ (Interface chung cho cả dự án)
+│   │   ├── UserService.java
+│   │   ├── PetService.java
+│   │   └── NotificationService.java
+│   ├── entity/ (Value Object, Embeddable)
+│   │   ├── UserReference.java
+│   │   └── PetReference.java
+│   ├── exception/
+│   │   ├── NotFoundException.java
+│   │   └── GlobalExceptionHandler.java
+│   └── util/
+│       ├── DateUtils.java
+│       └── Constants.java
+│
+├── config/
+│   └── AppConfig.java (Cấu hình chung cho Spring)
+│
+└── PetCareApplication.java

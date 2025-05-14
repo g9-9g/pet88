@@ -1,7 +1,7 @@
 CREATE TABLE `httc`.`requests` (
     request_id SERIAL PRIMARY KEY,
     owner_id BIGINT NOT NULL,
-    pet_id BIGINT NOT NULL,
+    pet_id BIGINT UNSIGNED NOT NULL,
     preferred_date DATE,
     preferred_time TIME,
     note TEXT,

@@ -1,9 +1,5 @@
 package com.framja.itss.config;
 
-import com.framja.itss.repository.UserRepository;
-import com.framja.itss.security.JwtAuthenticationFilter;
-import com.framja.itss.security.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +15,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.framja.itss.auth.security.JwtAuthenticationFilter;
+import com.framja.itss.auth.security.JwtTokenProvider;
+import com.framja.itss.users.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -61,7 +63,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/docs", "/docs/**", "/static/**").permitAll()
-                .requestMatchers("/api/users/**").hasAnyRole("ADMIN")
+                .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/tasks/**").hasAnyRole("ADMIN", "STAFF")
                 .requestMatchers("/api/pets/**").permitAll()
                 .anyRequest().authenticated()
