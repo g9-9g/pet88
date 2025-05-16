@@ -1,0 +1,9 @@
+target/
+.mvn/
+.git/
+.gitignore
+.DS_Store
+README.md
+*.md
+*.txt
+!help.txt 

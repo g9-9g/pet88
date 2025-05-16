@@ -66,7 +66,6 @@ public class PetController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF', 'VET', 'PET_OWNER')")
     public ResponseEntity<?> searchPets(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String species,
