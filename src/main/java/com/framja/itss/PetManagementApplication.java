@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "com.framja.itss")
-public class GroupManagementApplication {
+public class PetManagementApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GroupManagementApplication.class, args);
+		SpringApplication.run(PetManagementApplication.class, args);
 	}
 
 }
