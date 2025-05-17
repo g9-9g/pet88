@@ -66,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/**").permitAll()
                 .requestMatchers("/api/tasks/**").hasAnyRole("ADMIN", "STAFF")
                 .requestMatchers("/api/pets/**").permitAll()
+                .requestMatchers("/api/medical/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService()), 

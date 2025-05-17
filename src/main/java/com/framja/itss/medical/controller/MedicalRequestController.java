@@ -6,17 +6,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.framja.itss.common.enums.Status;
+import com.framja.itss.medical.dto.AcceptRequestDto;
 import com.framja.itss.medical.dto.CreateMedicalRequestDto;
 import com.framja.itss.medical.dto.MedicalRequestDto;
+import com.framja.itss.medical.dto.RejectRequestDto;
+import com.framja.itss.medical.dto.UpdateMedicalRequestDto;
 import com.framja.itss.medical.dto.UpdateRequestStatusDto;
 import com.framja.itss.medical.service.MedicalRequestService;
 import com.framja.itss.users.entity.User;
@@ -41,7 +46,6 @@ public class MedicalRequestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
     public ResponseEntity<List<MedicalRequestDto>> getAllRequests(
             @RequestParam(required = false) String ownerName,
             @RequestParam(required = false) Status status) {
@@ -50,7 +54,6 @@ public class MedicalRequestController {
     }
 
     @GetMapping("/{requestId}")
-    @PreAuthorize("hasAnyRole('ROLE_PET_OWNER', 'ROLE_STAFF', 'ROLE_VET', 'ROLE_ADMIN')")
     public ResponseEntity<MedicalRequestDto> getRequestById(@PathVariable Long requestId) {
         MedicalRequestDto requestDto = requestService.getRequestById(requestId);
         return ResponseEntity.ok(requestDto);
@@ -74,8 +77,12 @@ public class MedicalRequestController {
     @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
     public ResponseEntity<MedicalRequestDto> acceptRequest(
             @PathVariable Long requestId, 
-            @Valid @RequestBody UpdateRequestStatusDto updateDto) {
+            @RequestBody AcceptRequestDto acceptDto,
+            @AuthenticationPrincipal User user) {
+        UpdateRequestStatusDto updateDto = new UpdateRequestStatusDto();
         updateDto.setStatus(Status.ACCEPTED);
+        updateDto.setDoctorId(acceptDto.getDoctorId());
+        updateDto.setStaffId(user.getId());
         MedicalRequestDto requestDto = requestService.updateRequestStatus(requestId, updateDto);
         return ResponseEntity.ok(requestDto);
     }
@@ -84,9 +91,32 @@ public class MedicalRequestController {
     @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
     public ResponseEntity<MedicalRequestDto> rejectRequest(
             @PathVariable Long requestId, 
-            @Valid @RequestBody UpdateRequestStatusDto updateDto) {
+            @RequestBody RejectRequestDto rejectDto,
+            @AuthenticationPrincipal User user) {
+        UpdateRequestStatusDto updateDto = new UpdateRequestStatusDto();
         updateDto.setStatus(Status.REJECTED);
+        updateDto.setRejectionReason(rejectDto.getRejectionReason());
+        updateDto.setStaffId(user.getId());
         MedicalRequestDto requestDto = requestService.updateRequestStatus(requestId, updateDto);
+        return ResponseEntity.ok(requestDto);
+    }
+    
+    @DeleteMapping("/{requestId}")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER', 'ROLE_STAFF', 'ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteRequest(
+            @PathVariable Long requestId,
+            @AuthenticationPrincipal User user) {
+        requestService.deleteRequest(requestId, user.getId());
+        return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/{requestId}")
+    @PreAuthorize("hasRole('ROLE_STAFF')")
+    public ResponseEntity<MedicalRequestDto> updateRequest(
+            @PathVariable Long requestId,
+            @Valid @RequestBody UpdateMedicalRequestDto updateDto,
+            @AuthenticationPrincipal User user) {
+        MedicalRequestDto requestDto = requestService.updateRequest(requestId, updateDto, user.getId());
         return ResponseEntity.ok(requestDto);
     }
 }

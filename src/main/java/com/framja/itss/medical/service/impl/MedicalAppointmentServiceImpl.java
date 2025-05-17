@@ -52,6 +52,14 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
     }
 
     @Override
+    public List<MedicalAppointmentDto> getAllAppointments() {
+        List<MedicalAppointment> appointments = appointmentRepository.findAll();
+        return appointments.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public MedicalAppointmentDto updateAppointment(Long appointmentId, UpdateAppointmentDto updateDto) {
         MedicalAppointment appointment = appointmentRepository.findById(appointmentId)
@@ -88,9 +96,9 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
                 .petId(appointment.getPet().getPetId())
                 .petName(appointment.getPet().getName())
                 .ownerId(appointment.getOwner().getId())
-                .ownerName(appointment.getOwner().getFullName())
+                .ownerName(appointment.getOwner().getUsername())
                 .doctorId(appointment.getDoctor().getId())
-                .doctorName(appointment.getDoctor().getFullName())
+                .doctorName(appointment.getDoctor().getUsername())
                 .appointmentDateTime(appointment.getAppointmentDateTime())
                 .symptoms(appointment.getSymptoms())
                 .diagnosis(appointment.getDiagnosis())

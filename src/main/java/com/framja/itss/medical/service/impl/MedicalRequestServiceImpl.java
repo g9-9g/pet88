@@ -11,6 +11,7 @@ import com.framja.itss.common.enums.Status;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.medical.dto.CreateMedicalRequestDto;
 import com.framja.itss.medical.dto.MedicalRequestDto;
+import com.framja.itss.medical.dto.UpdateMedicalRequestDto;
 import com.framja.itss.medical.dto.UpdateRequestStatusDto;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.entity.MedicalRequest;
@@ -93,17 +94,28 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
         MedicalRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
         
+        if (request.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException("Status is not pending");
+        }
+        
         request.setStatus(updateDto.getStatus());
+        
+        // Set the staff who updates the request
+        if (updateDto.getStaffId() != null) {
+            User staff = userRepository.findById(updateDto.getStaffId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Staff not found with id: " + updateDto.getStaffId()));
+            request.setUpdatedBy(staff);
+        }
         
         if (updateDto.getStatus() == Status.ACCEPTED) {
             if (updateDto.getDoctorId() == null) {
                 throw new IllegalArgumentException("Doctor ID is required for accepting request");
             }
+
             
             User doctor = userRepository.findById(updateDto.getDoctorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id: " + updateDto.getDoctorId()));
             
-            request.setDoctor(doctor);
             
             // Create appointment
             MedicalAppointment appointment = MedicalAppointment.builder()
@@ -133,7 +145,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                 .filter(request -> {
                     // Apply owner name filter if provided
                     if (ownerName != null && !ownerName.isEmpty()) {
-                        String fullName = request.getOwner().getFullName();
+                        String fullName = request.getOwner().getUsername();
                         if (fullName == null || !fullName.toLowerCase().contains(ownerName.toLowerCase())) {
                             return false;
                         }
@@ -152,15 +164,77 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                 .collect(Collectors.toList());
     }
     
+    @Override
+    @Transactional
+    public void deleteRequest(Long requestId, Long userId) {
+        MedicalRequest request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+        
+        // Only the owner of the request can delete it
+        if (!request.getOwner().getId().equals(userId)) {
+            throw new IllegalArgumentException("Only the owner can delete this request");
+        }
+        
+        // Only PENDING requests can be deleted
+        if (request.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException("Only pending requests can be deleted");
+        }
+        
+        requestRepository.delete(request);
+    }
+    
+    @Override
+    @Transactional
+    public MedicalRequestDto updateRequest(Long requestId, UpdateMedicalRequestDto updateDto, Long userId) {
+        MedicalRequest request = requestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
+        
+        // Only the owner of the request can update it
+        if (!request.getOwner().getId().equals(userId)) {
+            throw new IllegalArgumentException("Only the owner can update this request");
+        }
+        
+        // Only PENDING requests can be updated
+        if (request.getStatus() != Status.PENDING) {
+            throw new IllegalArgumentException("Only pending requests can be updated");
+        }
+        
+        // Validate that the pet exists and belongs to the owner
+        Pet pet = petRepository.findById(updateDto.getPetId())
+                .orElseThrow(() -> new ResourceNotFoundException("Pet not found with id: " + updateDto.getPetId()));
+        
+        if (!pet.getOwner().getId().equals(userId)) {
+            throw new IllegalArgumentException("The pet does not belong to this owner");
+        }
+        
+        // Update the request properties
+        request.setPet(pet);
+        
+        if (updateDto.getSymptoms() != null) {
+            request.setSymptoms(updateDto.getSymptoms());
+        }
+        
+        if (updateDto.getNotes() != null) {
+            request.setNotes(updateDto.getNotes());
+        }
+        
+        if (updateDto.getPreferredDateTime() != null) {
+            request.setPreferredDateTime(updateDto.getPreferredDateTime());
+        }
+        
+        MedicalRequest updatedRequest = requestRepository.save(request);
+        return convertToDto(updatedRequest);
+    }
+    
     private MedicalRequestDto convertToDto(MedicalRequest request) {
         return MedicalRequestDto.builder()
                 .id(request.getId())
                 .petId(request.getPet().getPetId())
                 .petName(request.getPet().getName())
                 .ownerId(request.getOwner().getId())
-                .ownerName(request.getOwner().getFullName())
-                .doctorId(request.getDoctor() != null ? request.getDoctor().getId() : null)
-                .doctorName(request.getDoctor() != null ? request.getDoctor().getFullName() : null)
+                .ownerName(request.getOwner().getUsername())
+                .updatedById(request.getUpdatedBy() != null ? request.getUpdatedBy().getId() : null)
+                .updatedByName(request.getUpdatedBy() != null ? request.getUpdatedBy().getUsername() : null)
                 .symptoms(request.getSymptoms())
                 .notes(request.getNotes())
                 .preferredDateTime(request.getPreferredDateTime())

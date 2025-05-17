@@ -18,4 +18,5 @@ public class UpdateRequestStatusDto {
     
     private Long doctorId;
     private String rejectionReason;
+    private Long staffId;
 } 

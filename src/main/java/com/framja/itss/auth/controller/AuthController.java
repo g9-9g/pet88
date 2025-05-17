@@ -24,22 +24,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        try {
-            return ResponseEntity.ok(authService.register(request));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        }
+        return ResponseEntity.ok(authService.register(request));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@Valid @RequestBody AuthRequest request) {
-        try {
-            AuthResponse response = authService.authenticate(request);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(e.getMessage());
-        }
+        AuthResponse response = authService.authenticate(request);
+        return ResponseEntity.ok(response);
     }
 } 

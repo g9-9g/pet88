@@ -42,10 +42,10 @@ public class MedicalRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id")
-    private User doctor;
+    @JoinColumn(name = "updated_by_id")
+    private User updatedBy;
 
     @Column(columnDefinition = "TEXT")
     private String symptoms;

@@ -3,6 +3,7 @@ package com.framja.itss.users.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.framja.itss.common.enums.RoleName;
 import com.framja.itss.users.dto.ChangePasswordRequest;
 import com.framja.itss.users.dto.UserDto;
 import com.framja.itss.users.entity.User;
@@ -17,4 +18,5 @@ public interface UserService {
     UserDto convertToDto(User user);
     User convertToEntity(UserDto userDto);
     String changePassword(String username, ChangePasswordRequest request);
+    List<User> searchUsersByUsername(String username, RoleName role);
 } 

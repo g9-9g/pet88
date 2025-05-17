@@ -27,6 +27,12 @@ public class MedicalAppointmentController {
     @Autowired
     private MedicalAppointmentService appointmentService;
 
+    @GetMapping
+    public ResponseEntity<List<MedicalAppointmentDto>> getAllAppointments() {
+        List<MedicalAppointmentDto> appointments = appointmentService.getAllAppointments();
+        return ResponseEntity.ok(appointments);
+    }
+
     @GetMapping("/{appointmentId}")
     @PreAuthorize("hasAnyRole('ROLE_PET_OWNER', 'ROLE_STAFF', 'ROLE_VET', 'ROLE_ADMIN')")
     public ResponseEntity<MedicalAppointmentDto> getAppointmentById(@PathVariable Long appointmentId) {
@@ -54,6 +60,8 @@ public class MedicalAppointmentController {
         List<MedicalAppointmentDto> appointments = appointmentService.getActiveAppointments();
         return ResponseEntity.ok(appointments);
     }
+
+
 
     @PutMapping("/{appointmentId}")
     @PreAuthorize("hasRole('ROLE_VET')")

@@ -19,8 +19,8 @@ public class MedicalRequestDto {
     private String petName;
     private Long ownerId;
     private String ownerName;
-    private Long doctorId;
-    private String doctorName;
+    private Long updatedById;
+    private String updatedByName;
     private String symptoms;
     private String notes;
     private LocalDateTime preferredDateTime;

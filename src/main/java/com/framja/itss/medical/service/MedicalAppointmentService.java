@@ -10,5 +10,6 @@ public interface MedicalAppointmentService {
     List<MedicalAppointmentDto> getAppointmentsByOwnerId(Long ownerId);
     List<MedicalAppointmentDto> getAppointmentsByDoctorId(Long doctorId);
     List<MedicalAppointmentDto> getActiveAppointments();
+    List<MedicalAppointmentDto> getAllAppointments();
     MedicalAppointmentDto updateAppointment(Long appointmentId, UpdateAppointmentDto updateDto);
 } 

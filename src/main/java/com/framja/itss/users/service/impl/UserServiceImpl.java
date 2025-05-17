@@ -2,6 +2,7 @@ package com.framja.itss.users.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -120,5 +121,24 @@ public class UserServiceImpl implements UserService, UserQueryService {
                 .build();
         
         return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> searchUsersByUsername(String username, RoleName role) {
+        List<User> users;
+        
+        if (role != null) {
+            users = userRepository.findByRole(role);
+        } else {
+            users = userRepository.findAll();
+        }
+        
+        if (username != null && !username.isEmpty()) {
+            return users.stream()
+                    .filter(user -> user.getUsername().toLowerCase().contains(username.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        
+        return users;
     }
 } 

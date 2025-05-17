@@ -12,5 +12,4 @@ import com.framja.itss.medical.entity.MedicalRequest;
 public interface MedicalRequestRepository extends JpaRepository<MedicalRequest, Long> {
     List<MedicalRequest> findByOwnerId(Long ownerId);
     List<MedicalRequest> findByStatus(Status status);
-    List<MedicalRequest> findByDoctorId(Long doctorId);
 } 
