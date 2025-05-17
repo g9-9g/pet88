@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.framja.itss.medical.dto.MedicalAppointmentDto;
 import com.framja.itss.medical.dto.UpdateAppointmentDto;
+import com.framja.itss.medical.dto.CreateAppointmentDto;
 import com.framja.itss.medical.service.MedicalAppointmentService;
 import com.framja.itss.users.entity.User;
 
@@ -61,7 +63,12 @@ public class MedicalAppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_VET')")
+    public ResponseEntity<MedicalAppointmentDto> createAppointment(@Valid @RequestBody CreateAppointmentDto createDto) {
+        MedicalAppointmentDto appointmentDto = appointmentService.createAppointment(createDto);
+        return ResponseEntity.ok(appointmentDto);
+    }
 
     @PutMapping("/{appointmentId}")
     @PreAuthorize("hasRole('ROLE_VET')")

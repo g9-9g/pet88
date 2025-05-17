@@ -10,15 +10,22 @@ import org.springframework.transaction.annotation.Transactional;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.medical.dto.MedicalAppointmentDto;
 import com.framja.itss.medical.dto.UpdateAppointmentDto;
+import com.framja.itss.medical.dto.CreateAppointmentDto;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.service.MedicalAppointmentService;
+import com.framja.itss.users.entity.User;
+import com.framja.itss.users.repository.UserRepository;
+import com.framja.itss.common.enums.RoleName;
 
 @Service
 public class MedicalAppointmentServiceImpl implements MedicalAppointmentService {
 
     @Autowired
     private MedicalAppointmentRepository appointmentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public MedicalAppointmentDto getAppointmentById(Long appointmentId) {
@@ -87,6 +94,24 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
         
         MedicalAppointment updatedAppointment = appointmentRepository.save(appointment);
         return convertToDto(updatedAppointment);
+    }
+
+    @Override
+    @Transactional
+    public MedicalAppointmentDto createAppointment(CreateAppointmentDto createDto) {
+        MedicalAppointment appointment = new MedicalAppointment();
+        User doctor = userRepository.findById(createDto.getDoctorId())
+            .filter(user -> user.getRole() == RoleName.ROLE_VET)
+            .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found with id: " + createDto.getDoctorId()));
+        appointment.setDoctor(doctor);
+        appointment.setAppointmentDateTime(createDto.getAppointmentDateTime());
+        appointment.setDiagnosis(createDto.getDiagnosis());
+        appointment.setTreatment(createDto.getTreatment());
+        appointment.setNotes(createDto.getNotes());
+        appointment.setCompleted(Boolean.TRUE.equals(createDto.getCompleted()));
+        appointment.setCancelled(Boolean.TRUE.equals(createDto.getCancelled()));
+        MedicalAppointment saved = appointmentRepository.save(appointment);
+        return convertToDto(saved);
     }
     
     private MedicalAppointmentDto convertToDto(MedicalAppointment appointment) {

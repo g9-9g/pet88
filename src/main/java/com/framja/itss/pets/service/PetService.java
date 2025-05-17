@@ -28,4 +28,7 @@ public interface PetService {
                                       String gender, Long ownerId,
                                       String sortField, String sortDir,
                                       int page, int size);
+
+    // Lấy danh sách Pet đã có appointment completed=true, có thể lọc theo ownerId
+    List<PetDto> getPetsWithCompletedAppointments(Long ownerId);
 } 

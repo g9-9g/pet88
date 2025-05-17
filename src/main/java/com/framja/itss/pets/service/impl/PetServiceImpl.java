@@ -162,4 +162,12 @@ public class PetServiceImpl implements PetService {
         // Convert entity page sang DTO page
         return petPage.map(this::convertToDto);
     }
+
+    @Override
+    public List<PetDto> getPetsWithCompletedAppointments(Long ownerId) {
+        return petRepository.findPetsWithCompletedAppointments(ownerId)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
 } 

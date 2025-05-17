@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.framja.itss.medical.dto.MedicalAppointmentDto;
 import com.framja.itss.medical.dto.UpdateAppointmentDto;
+import com.framja.itss.medical.dto.CreateAppointmentDto;
 
 public interface MedicalAppointmentService {
     MedicalAppointmentDto getAppointmentById(Long appointmentId);
@@ -12,4 +13,5 @@ public interface MedicalAppointmentService {
     List<MedicalAppointmentDto> getActiveAppointments();
     List<MedicalAppointmentDto> getAllAppointments();
     MedicalAppointmentDto updateAppointment(Long appointmentId, UpdateAppointmentDto updateDto);
+    MedicalAppointmentDto createAppointment(CreateAppointmentDto createDto);
 } 
