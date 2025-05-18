@@ -1,5 +1,6 @@
 package com.framja.itss.medical.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.medical.dto.MedicalAppointmentDto;
 import com.framja.itss.medical.dto.UpdateAppointmentDto;
@@ -57,7 +59,9 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
 
     @Override
     public List<MedicalAppointmentDto> getActiveAppointments() {
-        List<MedicalAppointment> appointments = appointmentRepository.findByCompletedFalseAndCancelledFalse();
+        List<MedicalAppointment> appointments = appointmentRepository.findByStatusIn(
+            Arrays.asList(AppointmentStatus.SCHEDULED, AppointmentStatus.FOLLOW_UP)
+        );
         return appointments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -89,12 +93,8 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
             appointment.setNotes(updateDto.getNotes());
         }
         
-        if (updateDto.getCompleted() != null) {
-            appointment.setCompleted(updateDto.getCompleted());
-        }
-        
-        if (updateDto.getCancelled() != null) {
-            appointment.setCancelled(updateDto.getCancelled());
+        if (updateDto.getStatus() != null) {
+            appointment.setStatus(updateDto.getStatus());
         }
         
         MedicalAppointment updatedAppointment = appointmentRepository.save(appointment);
@@ -119,8 +119,7 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
         appointment.setDiagnosis(createDto.getDiagnosis());
         appointment.setTreatment(createDto.getTreatment());
         appointment.setNotes(createDto.getNotes());
-        appointment.setCompleted(false);
-        appointment.setCancelled(false);
+        appointment.setStatus(AppointmentStatus.FOLLOW_UP);
         MedicalAppointment saved = appointmentRepository.save(appointment);
         return convertToDto(saved);
     }
@@ -140,8 +139,7 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
                 .diagnosis(appointment.getDiagnosis())
                 .treatment(appointment.getTreatment())
                 .notes(appointment.getNotes())
-                .completed(appointment.isCompleted())
-                .cancelled(appointment.isCancelled())
+                .status(appointment.getStatus())
                 .createdAt(appointment.getCreatedAt())
                 .updatedAt(appointment.getUpdatedAt())
                 .build();

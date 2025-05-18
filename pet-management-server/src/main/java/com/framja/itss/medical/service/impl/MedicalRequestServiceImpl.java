@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framja.itss.common.enums.Status;
+import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.medical.dto.CreateMedicalRequestDto;
 import com.framja.itss.medical.dto.MedicalRequestDto;
@@ -126,6 +127,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                     .appointmentDateTime(request.getPreferredDateTime())
                     .symptoms(request.getSymptoms())
                     .notes(request.getNotes())
+                    .status(AppointmentStatus.SCHEDULED)
                     .build();
             
             appointmentRepository.save(appointment);

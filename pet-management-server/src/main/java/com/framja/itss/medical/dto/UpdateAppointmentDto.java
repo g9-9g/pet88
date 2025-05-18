@@ -1,5 +1,7 @@
 package com.framja.itss.medical.dto;
 
+import com.framja.itss.common.enums.AppointmentStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +15,5 @@ public class UpdateAppointmentDto {
     private String diagnosis;
     private String treatment;
     private String notes;
-    private Boolean completed;
-    private Boolean cancelled;
+    private AppointmentStatus status;
 } 

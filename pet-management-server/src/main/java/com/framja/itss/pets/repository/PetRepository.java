@@ -79,6 +79,6 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
             @Param("sortField") String sortField,
             @Param("sortDir") String sortDir);
 
-    @Query("SELECT DISTINCT p FROM Pet p JOIN MedicalAppointment a ON a.pet = p WHERE a.completed = true AND (:ownerId IS NULL OR p.owner.id = :ownerId)")
+    @Query("SELECT DISTINCT p FROM Pet p JOIN MedicalAppointment a ON a.pet = p WHERE a.status = com.framja.itss.common.enums.AppointmentStatus.COMPLETED AND (:ownerId IS NULL OR p.owner.id = :ownerId)")
     List<Pet> findPetsWithCompletedAppointments(@Param("ownerId") Long ownerId);
 } 

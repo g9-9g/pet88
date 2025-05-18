@@ -1,8 +1,7 @@
-package com.framja.itss.medical.entity;
+package com.framja.itss.grooming.entity;
 
 import java.time.LocalDateTime;
 
-import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.entity.User;
 
@@ -16,7 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -26,19 +24,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "medical_appointments")
+@Table(name = "grooming_requests")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MedicalAppointment {
+public class GroomingRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id", nullable = true)
-    private MedicalRequest request;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id", nullable = false)
+    private GroomingService service;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id", nullable = false)
@@ -49,35 +47,34 @@ public class MedicalAppointment {
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "doctor_id", nullable = false)
-    private User doctor;
+    @JoinColumn(name = "staff_id")
+    private User staff;
 
     @Column(nullable = false)
-    private LocalDateTime appointmentDateTime;
+    private LocalDateTime requestedDateTime;
 
-    @Column(columnDefinition = "TEXT")
-    private String symptoms;
+    private LocalDateTime scheduledDateTime;
 
-    @Column(columnDefinition = "TEXT")
-    private String diagnosis;
-
-    @Column(columnDefinition = "TEXT")
-    private String treatment;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private GroomingRequestStatus status;
 
     @Column(columnDefinition = "TEXT")
     private String notes;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    @Builder.Default
-    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
+    @Column(columnDefinition = "TEXT")
+    private String staffNotes;
 
+    private LocalDateTime completedDateTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = updatedAt = LocalDateTime.now();
+        if (status == null) {
+            status = GroomingRequestStatus.PENDING;
+        }
     }
 
     @PreUpdate
