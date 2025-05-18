@@ -34,7 +34,7 @@ public class MedicalAppointment {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id", nullable = false)
+    @JoinColumn(name = "request_id", nullable = true)
     private MedicalRequest request;
 
     @ManyToOne(fetch = FetchType.LAZY)

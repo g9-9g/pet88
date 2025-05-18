@@ -15,8 +15,10 @@ import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.service.MedicalAppointmentService;
 import com.framja.itss.users.entity.User;
+import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.repository.UserRepository;
 import com.framja.itss.common.enums.RoleName;
+import com.framja.itss.pets.repository.PetRepository;
 
 @Service
 public class MedicalAppointmentServiceImpl implements MedicalAppointmentService {
@@ -26,6 +28,9 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PetRepository petRepository;
 
     @Override
     public MedicalAppointmentDto getAppointmentById(Long appointmentId) {
@@ -98,18 +103,24 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
 
     @Override
     @Transactional
-    public MedicalAppointmentDto createAppointment(CreateAppointmentDto createDto) {
+    public MedicalAppointmentDto createAppointment(CreateAppointmentDto createDto, Long doctorId) {
         MedicalAppointment appointment = new MedicalAppointment();
-        User doctor = userRepository.findById(createDto.getDoctorId())
-            .filter(user -> user.getRole() == RoleName.ROLE_VET)
-            .orElseThrow(() -> new ResourceNotFoundException("Veterinarian not found with id: " + createDto.getDoctorId()));
+        Pet pet = petRepository.findById(createDto.getPetId())
+            .orElseThrow(() -> new com.framja.itss.exception.ResourceNotFoundException("Pet not found with id: " + createDto.getPetId()));
+
+        User doctor = userRepository.findById(doctorId)
+            .orElseThrow(() -> new com.framja.itss.exception.ResourceNotFoundException("Doctor not found with id: " + doctorId));
+
         appointment.setDoctor(doctor);
+        appointment.setRequest(null);
+        appointment.setPet(pet);
+        appointment.setOwner(pet.getOwner());
         appointment.setAppointmentDateTime(createDto.getAppointmentDateTime());
         appointment.setDiagnosis(createDto.getDiagnosis());
         appointment.setTreatment(createDto.getTreatment());
         appointment.setNotes(createDto.getNotes());
-        appointment.setCompleted(Boolean.TRUE.equals(createDto.getCompleted()));
-        appointment.setCancelled(Boolean.TRUE.equals(createDto.getCancelled()));
+        appointment.setCompleted(false);
+        appointment.setCancelled(false);
         MedicalAppointment saved = appointmentRepository.save(appointment);
         return convertToDto(saved);
     }
@@ -117,7 +128,7 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
     private MedicalAppointmentDto convertToDto(MedicalAppointment appointment) {
         return MedicalAppointmentDto.builder()
                 .id(appointment.getId())
-                .requestId(appointment.getRequest().getId())
+                .requestId(appointment.getRequest() != null ? appointment.getRequest().getId() : null)
                 .petId(appointment.getPet().getPetId())
                 .petName(appointment.getPet().getName())
                 .ownerId(appointment.getOwner().getId())

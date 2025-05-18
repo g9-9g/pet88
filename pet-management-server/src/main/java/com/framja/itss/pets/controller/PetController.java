@@ -90,7 +90,7 @@ public class PetController {
     }
 
     @GetMapping("/completed-appointments")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_VET')")
+    // @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_VET')")
     public ResponseEntity<List<PetDto>> getPetsWithCompletedAppointments(@RequestParam(value = "ownerId", required = false) Long ownerId) {
         List<PetDto> pets = petService.getPetsWithCompletedAppointments(ownerId);
         return new ResponseEntity<>(pets, HttpStatus.OK);

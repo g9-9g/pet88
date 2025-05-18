@@ -12,11 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateAppointmentDto {
-    private Long doctorId;
+    private Long petId;
     private LocalDateTime appointmentDateTime;
     private String diagnosis;
     private String treatment;
     private String notes;
-    private Boolean completed;
-    private Boolean cancelled;
 } 

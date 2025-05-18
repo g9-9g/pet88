@@ -13,5 +13,5 @@ public interface MedicalAppointmentService {
     List<MedicalAppointmentDto> getActiveAppointments();
     List<MedicalAppointmentDto> getAllAppointments();
     MedicalAppointmentDto updateAppointment(Long appointmentId, UpdateAppointmentDto updateDto);
-    MedicalAppointmentDto createAppointment(CreateAppointmentDto createDto);
+    MedicalAppointmentDto createAppointment(CreateAppointmentDto createDto, Long doctorId);
 } 

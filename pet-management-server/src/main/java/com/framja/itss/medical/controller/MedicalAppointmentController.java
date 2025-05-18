@@ -65,8 +65,8 @@ public class MedicalAppointmentController {
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_VET')")
-    public ResponseEntity<MedicalAppointmentDto> createAppointment(@Valid @RequestBody CreateAppointmentDto createDto) {
-        MedicalAppointmentDto appointmentDto = appointmentService.createAppointment(createDto);
+    public ResponseEntity<MedicalAppointmentDto> createAppointment(@AuthenticationPrincipal User user, @Valid @RequestBody CreateAppointmentDto createDto) {
+        MedicalAppointmentDto appointmentDto = appointmentService.createAppointment(createDto, user.getId());
         return ResponseEntity.ok(appointmentDto);
     }
 
