@@ -1,0 +1,137 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-brand: #fa7275;
+  --color-brand-100: #ea6365;
+  --color-red: #ff7474;
+  --color-error: #b80000;
+  --color-green: #3dd9b3;
+  --color-blue: #56b8ff;
+  --color-pink: #eea8fd;
+  --color-orange: #f9ab72;
+  --color-light-100: #333f4e;
+  --color-light-200: #a3b2c7;
+  --color-light-300: #f2f5f9;
+  --color-light-400: #f2f4f8;
+  --color-dark-100: #04050c;
+  --color-dark-200: #131524;
+
+  --animate-caret-blink: caret-blink 1.25s ease-out infinite;
+
+  @keyframes caret-blink {
+    0%,
+    70%,
+    100% {
+      opacity: 1;
+    }
+    20%,
+    50% {
+      opacity: 0;
+    }
+  }
+}
+
+/* Sidebar & MobileNavigation */
+@utility nav-icon {
+  @apply w-6 filter invert opacity-25;
+}
+@utility nav-icon-active {
+  @apply invert-0 opacity-100;
+}
+
+/* ===== STYLE CLASSES */
+@utility main-content {
+  @apply h-full flex-1 overflow-auto bg-light-400 px-5 py-7 sm:mr-7 sm:rounded-[30px] md:mb-7 md:px-9 md:py-10;
+}
+
+/* ===== TYPOGRAPHY */
+@utility h1 {
+  @apply text-[34px] leading-[42px] font-bold;
+}
+@utility h2 {
+  @apply text-[24px] leading-[36px] font-bold;
+}
+@utility h3 {
+  @apply text-[20px] leading-[28px] font-semibold;
+}
+@utility h4 {
+  @apply text-[18px] leading-[20px] font-medium;
+}
+@utility h5 {
+  @apply text-[16px] leading-[24px] font-semibold;
+}
+@utility subtitle-1 {
+  @apply text-[16px] leading-[24px] font-medium;
+}
+@utility subtitle-2 {
+  @apply text-[14px] leading-[20px] font-semibold;
+}
+@utility body-1 {
+  @apply text-[16px] leading-[24px] font-normal;
+}
+@utility body-2 {
+  @apply text-[14px] leading-[20px] font-normal;
+}
+@utility button {
+  @apply text-[14px] leading-[20px] font-medium;
+}
+@utility caption {
+  @apply text-[12px] leading-[16px] font-normal;
+}
+@utility overline {
+  @apply text-[10px] leading-[14px] font-normal;
+}
+
+/* ===== HELPER CLASSES */
+@utility container {
+  @apply mx-auto max-w-7xl px-5;
+}
+
+/* Sidebar & MobileNavigation */
+@utility nav-icon {
+  @apply w-6 filter invert opacity-25;
+}
+@utility nav-icon-active {
+  @apply invert-0 opacity-100;
+}
+
+/* Sidebar */
+@utility sidebar {
+  @apply hidden h-screen w-[90px] flex-col overflow-auto px-5 py-7 sm:flex lg:w-[280px] xl:w-[325px];
+}
+@utility sidebar-nav {
+  @apply h5 mt-9 flex-1 gap-1 text-brand;
+}
+@utility sidebar-nav-item {
+  @apply flex text-light-100 gap-4 rounded-xl lg:w-full justify-center lg:justify-start items-center h5 lg:px-[30px] h-[52px] lg:rounded-full;
+}
+@utility sidebar-user-info {
+  @apply mt-4 flex items-center justify-center gap-2 rounded-full bg-brand/10 p-1 text-light-100 lg:justify-start lg:p-3;
+}
+@utility sidebar-user-avatar {
+  @apply aspect-square w-10 rounded-full object-cover;
+}
+@utility shad-active {
+  @apply bg-brand text-white;
+}
+
+@layer components {
+  .header {
+    @apply flex items-center justify-between p-4 bg-white;
+  }
+
+  .header-wrapper {
+    @apply flex items-center gap-4;
+  }
+
+  .search {
+    @apply flex-grow max-w-md;
+  }
+
+  .search-input-wrapper {
+    @apply flex items-center gap-2 px-3 py-2 rounded-full border border-gray-300;
+  }
+}
