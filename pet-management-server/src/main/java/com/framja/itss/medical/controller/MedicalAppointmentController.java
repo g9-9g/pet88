@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.framja.itss.medical.dto.MedicalAppointmentDto;
+import com.framja.itss.medical.dto.MedicalAppointmentDetailDto;
 import com.framja.itss.medical.dto.UpdateAppointmentDto;
 import com.framja.itss.medical.dto.CreateAppointmentDto;
 import com.framja.itss.medical.service.MedicalAppointmentService;
@@ -37,8 +39,8 @@ public class MedicalAppointmentController {
 
     @GetMapping("/{appointmentId}")
     @PreAuthorize("hasAnyRole('ROLE_PET_OWNER', 'ROLE_STAFF', 'ROLE_VET', 'ROLE_ADMIN')")
-    public ResponseEntity<MedicalAppointmentDto> getAppointmentById(@PathVariable Long appointmentId) {
-        MedicalAppointmentDto appointmentDto = appointmentService.getAppointmentById(appointmentId);
+    public ResponseEntity<MedicalAppointmentDetailDto> getAppointmentDetails(@PathVariable Long appointmentId) {
+        MedicalAppointmentDetailDto appointmentDto = appointmentService.getAppointmentDetailsById(appointmentId);
         return ResponseEntity.ok(appointmentDto);
     }
 
@@ -53,6 +55,12 @@ public class MedicalAppointmentController {
     @PreAuthorize("hasRole('ROLE_VET')")
     public ResponseEntity<List<MedicalAppointmentDto>> getDoctorAppointments(@AuthenticationPrincipal User user) {
         List<MedicalAppointmentDto> appointments = appointmentService.getAppointmentsByDoctorId(user.getId());
+        return ResponseEntity.ok(appointments);
+    }
+
+    @GetMapping("/pet")
+    public ResponseEntity<List<MedicalAppointmentDto>> getAppointmentsByPetId(@RequestParam Long petId) {
+        List<MedicalAppointmentDto> appointments = appointmentService.getAppointmentsByPetId(petId);
         return ResponseEntity.ok(appointments);
     }
 
@@ -78,4 +86,6 @@ public class MedicalAppointmentController {
         MedicalAppointmentDto appointmentDto = appointmentService.updateAppointment(appointmentId, updateDto);
         return ResponseEntity.ok(appointmentDto);
     }
+
+
 } 

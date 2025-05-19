@@ -2,7 +2,7 @@ package com.framja.itss.medical.entity;
 
 import java.time.LocalDateTime;
 
-import com.framja.itss.common.enums.Status;
+import com.framja.itss.common.enums.RequestStatus;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.entity.User;
 
@@ -59,7 +59,7 @@ public class MedicalRequest {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private Status status = Status.PENDING;
+    private RequestStatus requestStatus = RequestStatus.PENDING;
 
     @Column(columnDefinition = "TEXT")
     private String rejectionReason;
