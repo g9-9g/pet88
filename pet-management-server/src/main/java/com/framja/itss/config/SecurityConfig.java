@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CorsFilter;
 
 import com.framja.itss.auth.security.JwtAuthenticationFilter;
 import com.framja.itss.auth.security.JwtTokenProvider;
@@ -30,6 +31,7 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CorsFilter corsFilter;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -58,6 +60,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configure(http)) // Enable CORS
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -69,6 +72,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/medical/**").permitAll()
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(corsFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService()), 
                 org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
 
