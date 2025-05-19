@@ -62,7 +62,7 @@ public class PetController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('PET_OWNER') and @petAuthorizationService.isOwner(#id, authentication.principal.id))")
     public ResponseEntity<Void> deletePet(@PathVariable Long id) {
         petService.deletePet(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/search")
