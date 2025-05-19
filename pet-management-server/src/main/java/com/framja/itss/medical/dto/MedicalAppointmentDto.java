@@ -2,13 +2,15 @@ package com.framja.itss.medical.dto;
 
 import java.time.LocalDateTime;
 
+import com.framja.itss.common.enums.AppointmentStatus;
+
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class MedicalAppointmentDto {
@@ -25,8 +27,7 @@ public class MedicalAppointmentDto {
     private String diagnosis;
     private String treatment;
     private String notes;
-    private boolean completed;
-    private boolean cancelled;
+    private AppointmentStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 } 

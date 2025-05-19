@@ -2,11 +2,14 @@ package com.framja.itss.medical.entity;
 
 import java.time.LocalDateTime;
 
+import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -64,11 +67,10 @@ public class MedicalAppointment {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     @Builder.Default
-    private boolean completed = false;
-
-    @Builder.Default
-    private boolean cancelled = false;
+    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

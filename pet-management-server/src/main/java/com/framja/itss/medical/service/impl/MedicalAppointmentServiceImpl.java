@@ -1,5 +1,6 @@
 package com.framja.itss.medical.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,13 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.medical.dto.MedicalAppointmentDto;
+import com.framja.itss.medical.dto.MedicalAppointmentDetailDto;
 import com.framja.itss.medical.dto.UpdateAppointmentDto;
 import com.framja.itss.medical.dto.CreateAppointmentDto;
+import com.framja.itss.medical.dto.PrescriptionDto;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.service.MedicalAppointmentService;
+import com.framja.itss.medical.service.PrescriptionService;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.repository.UserRepository;
@@ -31,6 +36,9 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
 
     @Autowired
     private PetRepository petRepository;
+
+    @Autowired
+    private PrescriptionService prescriptionService;
 
     @Override
     public MedicalAppointmentDto getAppointmentById(Long appointmentId) {
@@ -57,7 +65,9 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
 
     @Override
     public List<MedicalAppointmentDto> getActiveAppointments() {
-        List<MedicalAppointment> appointments = appointmentRepository.findByCompletedFalseAndCancelledFalse();
+        List<MedicalAppointment> appointments = appointmentRepository.findByStatusIn(
+            Arrays.asList(AppointmentStatus.SCHEDULED, AppointmentStatus.FOLLOW_UP)
+        );
         return appointments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -89,12 +99,8 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
             appointment.setNotes(updateDto.getNotes());
         }
         
-        if (updateDto.getCompleted() != null) {
-            appointment.setCompleted(updateDto.getCompleted());
-        }
-        
-        if (updateDto.getCancelled() != null) {
-            appointment.setCancelled(updateDto.getCancelled());
+        if (updateDto.getStatus() != null) {
+            appointment.setStatus(updateDto.getStatus());
         }
         
         MedicalAppointment updatedAppointment = appointmentRepository.save(appointment);
@@ -119,10 +125,55 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
         appointment.setDiagnosis(createDto.getDiagnosis());
         appointment.setTreatment(createDto.getTreatment());
         appointment.setNotes(createDto.getNotes());
-        appointment.setCompleted(false);
-        appointment.setCancelled(false);
+        appointment.setStatus(AppointmentStatus.FOLLOW_UP);
         MedicalAppointment saved = appointmentRepository.save(appointment);
         return convertToDto(saved);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public MedicalAppointmentDetailDto getAppointmentDetailsById(Long appointmentId) {
+        MedicalAppointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + appointmentId));
+        
+        List<PrescriptionDto> prescriptions = prescriptionService.findByAppointmentId(appointmentId).stream()
+                .map(prescription -> PrescriptionDto.builder()
+                        .id(prescription.getId())
+                        .appointmentId(prescription.getAppointment().getId())
+                        .medicineId(prescription.getMedicine().getId())
+                        .medicineName(prescription.getMedicine().getName())
+                        .quantity(prescription.getQuantity())
+                        .usageInstructions(prescription.getUsageInstructions())
+                        .build())
+                .collect(Collectors.toList());
+
+        return MedicalAppointmentDetailDto.builder()
+                .id(appointment.getId())
+                .requestId(appointment.getRequest() != null ? appointment.getRequest().getId() : null)
+                .petId(appointment.getPet().getPetId())
+                .petName(appointment.getPet().getName())
+                .ownerId(appointment.getOwner().getId())
+                .ownerName(appointment.getOwner().getUsername())
+                .doctorId(appointment.getDoctor().getId())
+                .doctorName(appointment.getDoctor().getUsername())
+                .appointmentDateTime(appointment.getAppointmentDateTime())
+                .symptoms(appointment.getSymptoms())
+                .diagnosis(appointment.getDiagnosis())
+                .treatment(appointment.getTreatment())
+                .notes(appointment.getNotes())
+                .status(appointment.getStatus())
+                .createdAt(appointment.getCreatedAt())
+                .updatedAt(appointment.getUpdatedAt())
+                .prescriptions(prescriptions)
+                .build();
+    }
+    
+    @Override
+    public List<MedicalAppointmentDto> getAppointmentsByPetId(Long petId) {
+        List<MedicalAppointment> appointments = appointmentRepository.findByPetId(petId);
+        return appointments.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
     
     private MedicalAppointmentDto convertToDto(MedicalAppointment appointment) {
@@ -140,8 +191,7 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
                 .diagnosis(appointment.getDiagnosis())
                 .treatment(appointment.getTreatment())
                 .notes(appointment.getNotes())
-                .completed(appointment.isCompleted())
-                .cancelled(appointment.isCancelled())
+                .status(appointment.getStatus())
                 .createdAt(appointment.getCreatedAt())
                 .updatedAt(appointment.getUpdatedAt())
                 .build();

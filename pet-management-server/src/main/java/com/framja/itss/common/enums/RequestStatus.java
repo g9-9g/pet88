@@ -1,6 +1,6 @@
 package com.framja.itss.common.enums;
 
-public enum Status {
+public enum RequestStatus {
     PENDING,
     ACCEPTED,
     REJECTED
