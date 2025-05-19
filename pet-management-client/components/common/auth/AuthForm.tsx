@@ -3,6 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,10 +25,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { authApi } from "@/lib/api/auth";
+import { authUtils } from "@/lib/utils/auth";
+import { useUser } from "@/context/UserContext";
+import { UserRole, roleUtils } from "@/lib/utils/role";
 
 type FormType = "sign-in" | "sign-up";
 
@@ -37,7 +41,8 @@ type BaseFormData = {
 // Define sign-up specific form data
 type SignUpFormData = BaseFormData & {
   email: string;
-  role: string;
+  fullName: string;
+  role: UserRole;
 };
 
 // Define form data type based on form type
@@ -63,15 +68,17 @@ const signUpSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  role: z.string({
+  fullName: z.string().min(2, {
+    message: "Full name must be at least 2 characters.",
+  }),
+  role: z.enum(["ROLE_PET_OWNER", "ROLE_VET", "ROLE_STAFF", "ROLE_ADMIN"], {
     required_error: "Please select a role.",
   }),
 });
 
-const role = "owner";
-
 const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
+  const { setUser } = useUser();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -87,7 +94,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
             username: "",
             password: "",
             email: "",
-            role: "",
+            fullName: "",
+            role: "ROLE_PET_OWNER",
           },
   });
 
@@ -96,28 +104,31 @@ const AuthForm = ({ type }: { type: FormType }) => {
     setErrorMessage("");
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/signin`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        }
-      );
+      const response = await authApi.login(values);
 
-      if (!response.ok) {
-        throw new Error("Sign in failed");
-      }
+      // Store auth data
+      authUtils.setToken(response.token);
+      authUtils.setUserData({
+        userId: response.userId,
+        username: response.username,
+        role: response.role,
+      });
 
-      // Handle successful sign in
-      console.log("Sign in successful");
+      // Update user context
+      setUser({
+        id: response.userId,
+        name: response.username,
+        email: "", // Email is not stored in cookies for security
+        role: response.role as UserRole,
+      });
+
+      // Redirect to the appropriate dashboard
+      const roleRoute = roleUtils.getRoleRoute(response.role as UserRole);
+      router.push(`/dashboard/${roleRoute}`);
     } catch (error) {
       setErrorMessage("Failed to sign in. Please try again");
     } finally {
       setIsLoading(false);
-      router.push(`/dashboard/${role}`);
     }
   };
 
@@ -126,28 +137,31 @@ const AuthForm = ({ type }: { type: FormType }) => {
     setErrorMessage("");
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/auth/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        }
-      );
+      const response = await authApi.register(values);
 
-      if (!response.ok) {
-        throw new Error("Sign up failed");
-      }
+      // Store auth data
+      authUtils.setToken(response.token);
+      authUtils.setUserData({
+        userId: response.userId,
+        username: response.username,
+        role: response.role,
+      });
 
-      // Handle successful sign up
-      console.log("Sign up successful");
+      // Update user context
+      setUser({
+        id: response.userId,
+        name: response.username,
+        email: values.email,
+        role: response.role as UserRole,
+      });
+
+      // Redirect to the appropriate dashboard
+      const roleRoute = roleUtils.getRoleRoute(response.role as UserRole);
+      router.push(`/dashboard/${roleRoute}`);
     } catch (error) {
       setErrorMessage("Failed to create account. Please try again");
     } finally {
       setIsLoading(false);
-      router.push(`/dashboard/${role}`);
     }
   };
 
@@ -241,6 +255,28 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
               <FormField
                 control={form.control}
+                name="fullName"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex h-[78px] flex-col justify-center rounded-xl border border-light-300 px-4">
+                      <FormLabel className="text-light-100 pt-2 body-2 w-full">
+                        Full Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your full name"
+                          className="border-none shadow-none p-0 outline-none ring-offset-transparent focus:ring-transparent focus:ring-offset-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 placeholder:text-light-200 body-2"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="text-red body-2 ml-4" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="role"
                 render={({ field }) => (
                   <FormItem>
@@ -260,8 +296,13 @@ const AuthForm = ({ type }: { type: FormType }) => {
                             <SelectItem value="ROLE_PET_OWNER">
                               Pet Owner
                             </SelectItem>
-                            <SelectItem value="ROLE_DOCTOR">Doctor</SelectItem>
+                            <SelectItem value="ROLE_VET">
+                              Veterinarian
+                            </SelectItem>
                             <SelectItem value="ROLE_STAFF">Staff</SelectItem>
+                            <SelectItem value="ROLE_ADMIN">
+                              Administrator
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>
