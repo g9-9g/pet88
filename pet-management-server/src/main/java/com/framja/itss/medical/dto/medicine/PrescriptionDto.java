@@ -1,4 +1,4 @@
-package com.framja.itss.medical.dto;
+package com.framja.itss.medical.dto.medicine;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

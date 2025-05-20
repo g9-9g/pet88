@@ -81,14 +81,6 @@ public class GroomingRequestController {
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
-    @GetMapping("/staff-assigned")
-    @PreAuthorize("hasRole('ROLE_STAFF')")
-    public ResponseEntity<List<GroomingRequestDto>> getGroomingRequestsAssignedToStaff(
-            @AuthenticationPrincipal User user) {
-        List<GroomingRequestDto> requests = groomingRequestService.getRequestsByStaffId(user.getId());
-        return new ResponseEntity<>(requests, HttpStatus.OK);
-    }
-
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_STAFF')")
     public ResponseEntity<GroomingRequestDto> updateGroomingRequestStatus(

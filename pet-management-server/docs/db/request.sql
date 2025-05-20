@@ -6,7 +6,7 @@ CREATE TABLE `httc`.`requests` (
     preferred_time TIME,
     note TEXT,
     doctor_id BIGINT,
-    requestStatus ENUM('PENDING', 'ACCEPTED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+    medicalRequestStatus ENUM('PENDING', 'ACCEPTED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
     reject_reason TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -33,7 +33,7 @@ ALTER TABLE `httc`.`requests` MODIFY COLUMN preferred_date DATE COMMENT 'Preferr
 ALTER TABLE `httc`.`requests` MODIFY COLUMN preferred_time TIME COMMENT 'Preferred time for the appointment';
 ALTER TABLE `httc`.`requests` MODIFY COLUMN note TEXT COMMENT 'Additional notes from the pet owner';
 ALTER TABLE `httc`.`requests` MODIFY COLUMN doctor_id BIGINT COMMENT 'ID of the assigned veterinarian (if any)';
-ALTER TABLE `httc`.`requests` MODIFY COLUMN requestStatus ENUM('PENDING', 'ACCEPTED', 'REJECTED') NOT NULL DEFAULT 'PENDING' COMMENT 'Current requestStatus of the request';
+ALTER TABLE `httc`.`requests` MODIFY COLUMN medicalRequestStatus ENUM('PENDING', 'ACCEPTED', 'REJECTED') NOT NULL DEFAULT 'PENDING' COMMENT 'Current medicalRequestStatus of the request';
 ALTER TABLE `httc`.`requests` MODIFY COLUMN reject_reason TEXT COMMENT 'Reason for rejection (if rejected)';
 ALTER TABLE `httc`.`requests` MODIFY COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the request was created';
 ALTER TABLE `httc`.`requests` MODIFY COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when the request was last updated';
@@ -42,5 +42,5 @@ ALTER TABLE `httc`.`requests` MODIFY COLUMN updated_at TIMESTAMP DEFAULT CURRENT
 CREATE INDEX idx_requests_owner ON `httc`.`requests`(owner_id);
 CREATE INDEX idx_requests_pet ON `httc`.`requests`(pet_id);
 CREATE INDEX idx_requests_doctor ON `httc`.`requests`(doctor_id);
-CREATE INDEX idx_requests_status ON `httc`.`requests`(requestStatus);
+CREATE INDEX idx_requests_status ON `httc`.`requests`(medicalRequestStatus);
 CREATE INDEX idx_requests_date ON `httc`.`requests`(preferred_date); 

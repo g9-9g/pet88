@@ -1,6 +1,6 @@
 package com.framja.itss.common.enums;
 
-public enum RequestStatus {
+public enum MedicalRequestStatus {
     PENDING,
     ACCEPTED,
     REJECTED

@@ -1,4 +1,4 @@
-package com.framja.itss.medical.dto;
+package com.framja.itss.medical.dto.appointment;
 
 import com.framja.itss.common.enums.AppointmentStatus;
 

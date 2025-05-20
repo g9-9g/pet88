@@ -1,6 +1,6 @@
-package com.framja.itss.medical.dto;
+package com.framja.itss.medical.dto.request;
 
-import com.framja.itss.common.enums.RequestStatus;
+import com.framja.itss.common.enums.MedicalRequestStatus;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateRequestStatusDto {
-    @NotNull(message = "RequestStatus is required")
-    private RequestStatus requestStatus;
+    @NotNull(message = "MedicalRequestStatus is required")
+    private MedicalRequestStatus status;
     
     private Long doctorId;
     private String rejectionReason;
