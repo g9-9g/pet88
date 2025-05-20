@@ -1,19 +1,22 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/context/UserContext";
 import Link from "next/link";
-import { GiCat, GiHamburgerMenu } from "react-icons/gi";
-import { GrFormClose } from "react-icons/gr";
-import Icon from "../Icon";
+import { GiHamburgerMenu } from "react-icons/gi";
+import Icon from "../common/Icon";
 
 const navigation = [
-  { name: "Home", href: "#", current: true },
-  { name: "About Us", href: "#", current: false },
-  { name: "Services", href: "#", current: false },
-  { name: "Pricing", href: "#", current: false },
-  { name: "Testimonial", href: "#", current: false },
+  { name: "Home", href: "/", current: true },
+  { name: "About Us", href: "/about", current: false },
+  { name: "Services", href: "/services", current: false },
+  { name: "Contact", href: "/contact", current: false },
 ];
 
 export default function Navbar() {
+  const { user } = useUser();
+
   return (
     <header className="bg-white">
       <>
@@ -51,11 +54,19 @@ export default function Navbar() {
               </div>
             </div>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <Link href="/sign-in">
-                <Button className="rounded-full border border-orange-100 px-3 py-2 text-base font-medium text-brand hover:bg-brand hover:text-white hover:shadow-lg">
-                  Register
-                </Button>
-              </Link>
+              {user ? (
+                <Link href="/dashboard">
+                  <Button className="rounded-full border border-orange-100 px-3 py-2 text-base font-medium text-brand hover:bg-brand hover:text-white hover:shadow-lg">
+                    Go to dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/sign-in">
+                  <Button className="rounded-full border border-orange-100 px-3 py-2 text-base font-medium text-brand hover:bg-brand hover:text-white hover:shadow-lg">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -63,8 +74,9 @@ export default function Navbar() {
         <div className="sm:hidden">
           <div className="space-y-1 px-2 pt-2 pb-3">
             {navigation.map((item) => (
-              <Button
+              <Link
                 key={item.name}
+                href={item.href}
                 className={cn(
                   item.current
                     ? "bg-brand text-white shadow-lg"
@@ -74,7 +86,7 @@ export default function Navbar() {
                 aria-current={item.current ? "page" : undefined}
               >
                 {item.name}
-              </Button>
+              </Link>
             ))}
           </div>
         </div>

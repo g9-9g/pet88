@@ -3,7 +3,7 @@
 import React from "react";
 import { useUser } from "@/context/UserContext"; // Import useUser
 
-const AppointmentsPage = () => {
+const RequestsPage = () => {
   const { user, isLoading } = useUser(); // Use the hook
 
   if (isLoading) {
@@ -12,7 +12,7 @@ const AppointmentsPage = () => {
 
   if (!user) {
     // This case should ideally be handled by a redirect to login if no user is found after loading
-    return <div>Please log in to see appointments.</div>;
+    return <div>Please log in to see requests.</div>;
   }
 
   // Example: Fetch appointments based on user role (conceptual)
@@ -34,29 +34,22 @@ const AppointmentsPage = () => {
       {/* Conditional rendering based on role */}
       {user.role === "ROLE_PET_OWNER" && (
         <div>
-          <h2>Your Pet's Appointments</h2>
-          <button>Book New Appointment</button>
+          <h2>Your Pet's Medical Requests</h2>
+          <button>Book New Request</button>
           {/* List owner's appointments here */}
-        </div>
-      )}
-
-      {user.role === "ROLE_VET" && (
-        <div>
-          <h2>Doctor's Schedule</h2>
-          {/* List doctor's appointments, controls to manage them */}
         </div>
       )}
 
       {user.role === "ROLE_STAFF" && (
         <div>
-          <h2>Manage All Appointments</h2>
+          <h2>Manage All Requests</h2>
           {/* Interface for staff to manage all appointments */}
         </div>
       )}
 
       {user.role === "ROLE_ADMIN" && (
         <div>
-          <h2>Admin Overview of Appointments</h2>
+          <h2>Admin Overview of Requests</h2>
           {/* Admin view, perhaps statistics or high-level management */}
         </div>
       )}
@@ -67,4 +60,4 @@ const AppointmentsPage = () => {
   );
 };
 
-export default AppointmentsPage;
+export default RequestsPage;

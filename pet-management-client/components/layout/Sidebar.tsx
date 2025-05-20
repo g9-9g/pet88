@@ -1,6 +1,6 @@
 "use client";
 
-import { navItems } from "@/constants";
+import { useUser } from "@/context/UserContext";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,27 +9,70 @@ import React from "react";
 import Icon from "../common/Icon";
 import NavIcon from "../icons/NavIcons";
 
-interface Props {
-  fullName: string;
-  avatar: string;
-  email: string;
-}
+const navItems = [
+  {
+    url: "/dashboard",
+    name: "Dashboard",
+    icon: "dashboard",
+    roles: ["ROLE_PET_OWNER", "ROLE_VET", "ROLE_STAFF", "ROLE_ADMIN"],
+  },
+  {
+    url: "/dashboard/pets",
+    name: "Pets",
+    icon: "pets",
+    roles: ["ROLE_PET_OWNER", "ROLE_VET", "ROLE_STAFF", "ROLE_ADMIN"],
+  },
+  {
+    url: "/dashboard/requests",
+    name: "Requests",
+    icon: "request",
+    roles: ["ROLE_PET_OWNER", "ROLE_STAFF", "ROLE_ADMIN"],
+  },
+  {
+    url: "/dashboard/appointments",
+    name: "Appointments",
+    icon: "calendar",
+    roles: ["ROLE_PET_OWNER", "ROLE_VET", "ROLE_STAFF", "ROLE_ADMIN"],
+  },
+  {
+    url: "/dashboard/users",
+    name: "Users",
+    icon: "users",
+    roles: ["ROLE_ADMIN"],
+  },
+  {
+    url: "/dashboard/services",
+    name: "Services",
+    icon: "services",
+    roles: ["ROLE_PET_OWNER", "ROLE_VET", "ROLE_STAFF", "ROLE_ADMIN"],
+  },
+  {
+    url: "/dashboard/hotel",
+    name: "Hotel",
+    icon: "hotel",
+    roles: ["ROLE_PET_OWNER", "ROLE_VET", "ROLE_STAFF", "ROLE_ADMIN"],
+  },
+];
 
-const Sidebar = ({ fullName, avatar, email }: Props) => {
+const Sidebar = () => {
   const pathname = usePathname();
+  const { user } = useUser();
+
+  if (!user) return null;
 
   const isActive = (itemUrl: string) => {
-    // Exact match for the main dashboard link
     if (itemUrl === "/dashboard") {
-      return pathname === itemUrl;
+      return (
+        pathname === "/dashboard" ||
+        /^\/dashboard\/(owner|vet|staff|admin)$/.test(pathname)
+      );
     }
-    // For other items, check if the current path starts with the item's URL
-    // and also ensure it's not just the main dashboard path unless the item IS the dashboard.
-    // This prevents, for example, "Pets" being active if the path is just "/dashboard"
-    if (pathname === "/dashboard" && itemUrl !== "/dashboard") return false;
-
     return pathname.startsWith(itemUrl);
   };
+
+  const filteredNavItems = navItems.filter((item) =>
+    item.roles.includes(user.role)
+  );
 
   return (
     <aside className="sidebar">
@@ -44,7 +87,7 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
 
       <nav className="sidebar-nav">
         <ul className="flex flex-1 flex-col gap-2">
-          {navItems.map(({ url, name, icon }) => (
+          {filteredNavItems.map(({ url, name, icon }) => (
             <Link key={name} href={url} className="lg:w-full">
               <li
                 className={cn(
@@ -77,15 +120,17 @@ const Sidebar = ({ fullName, avatar, email }: Props) => {
       </div>
       <div className="sidebar-user-info">
         <Image
-          src={avatar}
+          src="/assets/images/default-avatar.png"
           alt="avatar"
           width={44}
           height={44}
           className="sidebar-user-avatar"
         />
         <div className="hidden lg:block">
-          <p className="subtitle-2 capitalize">{fullName}</p>
-          <p className="caption">{email}</p>
+          <p className="subtitle-2 capitalize">{user.name}</p>
+          <p className="caption capitalize">
+            {user.role.replace("ROLE_", "").replace("_", " ")}
+          </p>
         </div>
       </div>
     </aside>

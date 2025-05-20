@@ -1,22 +1,23 @@
 import { IconType } from "react-icons";
 import {
-  MdDashboard,
   MdPets,
-  MdSettings,
-  MdMedicalServices,
   MdGroups,
+  MdMedicalServices,
+  MdHotel,
+  MdDashboard,
 } from "react-icons/md";
 import { BsCalendar2Week } from "react-icons/bs";
 import { GiDogBowl } from "react-icons/gi";
+import { IoMdNotifications } from "react-icons/io";
 
 export const iconMap: { [key: string]: IconType } = {
-  "/assets/icons/dashboard.svg": MdDashboard,
-  "/assets/icons/calendar.svg": BsCalendar2Week,
-  "/assets/icons/pet.svg": MdPets,
-  "/assets/icons/services.svg": GiDogBowl,
-  "/assets/icons/medical.svg": MdMedicalServices,
-  "/assets/icons/staff.svg": MdGroups,
-  "/assets/icons/settings.svg": MdSettings,
+  dashboard: MdDashboard,
+  request: IoMdNotifications,
+  calendar: BsCalendar2Week,
+  pets: MdPets,
+  users: MdGroups,
+  services: GiDogBowl,
+  hotel: MdHotel,
 };
 
 interface NavIconProps {
