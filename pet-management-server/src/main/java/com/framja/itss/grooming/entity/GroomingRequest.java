@@ -2,6 +2,7 @@ package com.framja.itss.grooming.entity;
 
 import java.time.LocalDateTime;
 
+import com.framja.itss.common.enums.GroomingRequestStatus;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.entity.User;
 

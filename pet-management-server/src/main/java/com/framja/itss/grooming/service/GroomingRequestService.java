@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 
 import com.framja.itss.grooming.dto.GroomingRequestDto;
-import com.framja.itss.grooming.entity.GroomingRequestStatus;
+import com.framja.itss.common.enums.GroomingRequestStatus;
 
 public interface GroomingRequestService {
     

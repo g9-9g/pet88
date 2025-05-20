@@ -31,14 +31,14 @@ public class GroomingServiceController {
     private final GroomingServiceService groomingServiceService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GroomingServiceDto> createGroomingService(@RequestBody GroomingServiceDto serviceDto) {
         GroomingServiceDto created = groomingServiceService.createService(serviceDto);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<GroomingServiceDto> getGroomingServiceById(@PathVariable Long id) {
         return groomingServiceService.getServiceById(id)
                 .map(serviceDto -> new ResponseEntity<>(serviceDto, HttpStatus.OK))
@@ -46,21 +46,21 @@ public class GroomingServiceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<List<GroomingServiceDto>> getAllGroomingServices() {
         List<GroomingServiceDto> services = groomingServiceService.getAllServices();
         return new ResponseEntity<>(services, HttpStatus.OK);
     }
 
     @GetMapping("/active")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<List<GroomingServiceDto>> getActiveGroomingServices() {
         List<GroomingServiceDto> services = groomingServiceService.getActiveServices();
         return new ResponseEntity<>(services, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<GroomingServiceDto> updateGroomingService(
             @PathVariable Long id, @RequestBody GroomingServiceDto serviceDto) {
         GroomingServiceDto updated = groomingServiceService.updateService(id, serviceDto);
@@ -68,14 +68,14 @@ public class GroomingServiceController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteGroomingService(@PathVariable Long id) {
         groomingServiceService.deleteService(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<?> searchGroomingServices(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Double minPrice,

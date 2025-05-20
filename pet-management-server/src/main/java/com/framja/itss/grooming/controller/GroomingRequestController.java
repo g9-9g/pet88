@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.framja.itss.grooming.dto.GroomingRequestDto;
-import com.framja.itss.grooming.entity.GroomingRequestStatus;
+import com.framja.itss.common.enums.GroomingRequestStatus;
 import com.framja.itss.grooming.service.GroomingRequestService;
 import com.framja.itss.users.entity.User;
 
@@ -36,7 +36,7 @@ public class GroomingRequestController {
     private final GroomingRequestService groomingRequestService;
 
     @PostMapping
-    @PreAuthorize("hasRole('PET_OWNER')")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<GroomingRequestDto> createGroomingRequest(
             @RequestBody GroomingRequestDto.CreateRequest createRequest,
             @AuthenticationPrincipal User user) {
@@ -45,7 +45,7 @@ public class GroomingRequestController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<GroomingRequestDto> getGroomingRequestById(@PathVariable Long id) {
         return groomingRequestService.getRequestById(id)
                 .map(requestDto -> new ResponseEntity<>(requestDto, HttpStatus.OK))
@@ -53,28 +53,28 @@ public class GroomingRequestController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     public ResponseEntity<List<GroomingRequestDto>> getAllGroomingRequests() {
         List<GroomingRequestDto> requests = groomingRequestService.getAllRequests();
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @GetMapping("/my-requests")
-    @PreAuthorize("hasRole('PET_OWNER')")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<List<GroomingRequestDto>> getMyGroomingRequests(@AuthenticationPrincipal User user) {
         List<GroomingRequestDto> requests = groomingRequestService.getRequestsByOwnerId(user.getId());
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @GetMapping("/pet/{petId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<List<GroomingRequestDto>> getGroomingRequestsByPetId(@PathVariable Long petId) {
         List<GroomingRequestDto> requests = groomingRequestService.getRequestsByPetId(petId);
         return new ResponseEntity<>(requests, HttpStatus.OK);
     }
 
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     public ResponseEntity<List<GroomingRequestDto>> getGroomingRequestsByStatus(
             @PathVariable GroomingRequestStatus status) {
         List<GroomingRequestDto> requests = groomingRequestService.getRequestsByStatus(status);
@@ -82,7 +82,7 @@ public class GroomingRequestController {
     }
 
     @GetMapping("/staff-assigned")
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('ROLE_STAFF')")
     public ResponseEntity<List<GroomingRequestDto>> getGroomingRequestsAssignedToStaff(
             @AuthenticationPrincipal User user) {
         List<GroomingRequestDto> requests = groomingRequestService.getRequestsByStaffId(user.getId());
@@ -90,7 +90,7 @@ public class GroomingRequestController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('STAFF')")
+    @PreAuthorize("hasRole('ROLE_STAFF')")
     public ResponseEntity<GroomingRequestDto> updateGroomingRequestStatus(
             @PathVariable Long id,
             @RequestBody GroomingRequestDto.UpdateRequest updateRequest,
@@ -100,14 +100,14 @@ public class GroomingRequestController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deleteGroomingRequest(@PathVariable Long id) {
         groomingRequestService.deleteRequest(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
     public ResponseEntity<?> searchGroomingRequests(
             @RequestParam(required = false) Long ownerId,
             @RequestParam(required = false) Long petId,

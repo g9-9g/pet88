@@ -13,17 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framja.itss.grooming.dto.GroomingRequestDto;
-import com.framja.itss.grooming.dto.GroomingServiceDto;
 import com.framja.itss.grooming.entity.GroomingRequest;
-import com.framja.itss.grooming.entity.GroomingRequestStatus;
+import com.framja.itss.common.enums.GroomingRequestStatus;
 import com.framja.itss.grooming.entity.GroomingService;
 import com.framja.itss.grooming.repository.GroomingRequestRepository;
 import com.framja.itss.grooming.repository.GroomingServiceRepository;
 import com.framja.itss.grooming.service.GroomingRequestService;
-import com.framja.itss.pets.dto.PetDto;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
-import com.framja.itss.users.dto.UserDto;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.users.repository.UserRepository;
 
@@ -126,8 +123,12 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
         
         request.setStaff(staff);
         request.setStatus(updateRequest.getStatus());
-        request.setScheduledDateTime(updateRequest.getScheduledDateTime());
-        request.setStaffNotes(updateRequest.getStaffNotes());
+        if (updateRequest.getScheduledDateTime() != null) {
+            request.setScheduledDateTime(updateRequest.getScheduledDateTime());
+        }
+        if (updateRequest.getStaffNotes() != null) {
+            request.setStaffNotes(updateRequest.getStaffNotes());
+        }
         
         // If status is completed, set the completed date
         if (updateRequest.getStatus() == GroomingRequestStatus.COMPLETED) {
@@ -149,6 +150,8 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
     public Page<GroomingRequestDto> getFilteredRequestsWithPagination(
             Long ownerId, Long petId, Long serviceId, Long staffId, GroomingRequestStatus status,
             LocalDateTime startDate, LocalDateTime endDate, String sortBy, String sortDir, int page, int size) {
+        
+
         
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? 
                 Sort.by(sortBy).ascending() : 
