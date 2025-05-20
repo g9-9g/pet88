@@ -1,6 +1,6 @@
 package com.framja.itss.medical.controller;
 
-import com.framja.itss.medical.dto.PrescriptionDto;
+import com.framja.itss.medical.dto.medicine.PrescriptionDto;
 import com.framja.itss.medical.entity.Medicine;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.entity.Prescription;

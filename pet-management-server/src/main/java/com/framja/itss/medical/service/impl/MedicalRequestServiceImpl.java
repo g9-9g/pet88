@@ -3,17 +3,17 @@ package com.framja.itss.medical.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.framja.itss.common.enums.RequestStatus;
+import com.framja.itss.common.enums.MedicalRequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
-import com.framja.itss.medical.dto.CreateMedicalRequestDto;
-import com.framja.itss.medical.dto.MedicalRequestDto;
-import com.framja.itss.medical.dto.UpdateMedicalRequestDto;
-import com.framja.itss.medical.dto.UpdateRequestStatusDto;
+import com.framja.itss.medical.dto.request.CreateMedicalRequestDto;
+import com.framja.itss.medical.dto.request.MedicalRequestDto;
+import com.framja.itss.medical.dto.request.UpdateMedicalRequestDto;
+import com.framja.itss.medical.dto.request.UpdateRequestStatusDto;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.entity.MedicalRequest;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
@@ -59,7 +59,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                 .symptoms(createDto.getSymptoms())
                 .notes(createDto.getNotes())
                 .preferredDateTime(createDto.getPreferredDateTime())
-                .requestStatus(RequestStatus.PENDING)
+                .status(MedicalRequestStatus.PENDING)
                 .build();
         
         MedicalRequest savedRequest = requestRepository.save(request);
@@ -83,7 +83,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
 
     @Override
     public List<MedicalRequestDto> getPendingRequests() {
-        List<MedicalRequest> requests = requestRepository.findByRequestStatus(RequestStatus.PENDING);
+        List<MedicalRequest> requests = requestRepository.findByStatus(MedicalRequestStatus.PENDING);
         return requests.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -95,11 +95,11 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
         MedicalRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Request not found with id: " + requestId));
         
-        if (request.getRequestStatus() != RequestStatus.PENDING) {
-            throw new IllegalArgumentException("RequestStatus is not pending");
+        if (request.getStatus() != MedicalRequestStatus.PENDING) {
+            throw new IllegalArgumentException("MedicalRequestStatus is not pending");
         }
         
-        request.setRequestStatus(updateDto.getRequestStatus());
+        request.setStatus(updateDto.getStatus());
         
         // Set the staff who updates the request
         if (updateDto.getStaffId() != null) {
@@ -108,11 +108,10 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
             request.setUpdatedBy(staff);
         }
         
-        if (updateDto.getRequestStatus() == RequestStatus.ACCEPTED) {
+        if (updateDto.getStatus() == MedicalRequestStatus.ACCEPTED) {
             if (updateDto.getDoctorId() == null) {
                 throw new IllegalArgumentException("Doctor ID is required for accepting request");
             }
-
             
             User doctor = userRepository.findById(updateDto.getDoctorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id: " + updateDto.getDoctorId()));
@@ -131,7 +130,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                     .build();
             
             appointmentRepository.save(appointment);
-        } else if (updateDto.getRequestStatus() == RequestStatus.REJECTED) {
+        } else if (updateDto.getStatus() == MedicalRequestStatus.REJECTED) {
             request.setRejectionReason(updateDto.getRejectionReason());
         }
         
@@ -140,7 +139,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
     }
 
     @Override
-    public List<MedicalRequestDto> getAllRequests(String ownerName, RequestStatus requestStatus) {
+    public List<MedicalRequestDto> getAllRequests(String ownerName, MedicalRequestStatus medicalRequestStatus) {
         List<MedicalRequest> requests = requestRepository.findAll();
         
         return requests.stream()
@@ -153,9 +152,9 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                         }
                     }
                     
-                    // Apply requestStatus filter if provided
-                    if (requestStatus != null) {
-                        if (!request.getRequestStatus().equals(requestStatus)) {
+                    // Apply medicalRequestStatus filter if provided
+                    if (medicalRequestStatus != null) {
+                        if (!request.getStatus().equals(medicalRequestStatus)) {
                             return false;
                         }
                     }
@@ -178,7 +177,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
         }
         
         // Only PENDING requests can be deleted
-        if (request.getRequestStatus() != RequestStatus.PENDING) {
+        if (request.getStatus() != MedicalRequestStatus.PENDING) {
             throw new IllegalArgumentException("Only pending requests can be deleted");
         }
         
@@ -197,7 +196,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
         }
         
         // Only PENDING requests can be updated
-        if (request.getRequestStatus() != RequestStatus.PENDING) {
+        if (request.getStatus() != MedicalRequestStatus.PENDING) {
             throw new IllegalArgumentException("Only pending requests can be updated");
         }
         
@@ -240,7 +239,7 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                 .symptoms(request.getSymptoms())
                 .notes(request.getNotes())
                 .preferredDateTime(request.getPreferredDateTime())
-                .requestStatus(request.getRequestStatus())
+                .status(request.getStatus())
                 .rejectionReason(request.getRejectionReason())
                 .createdAt(request.getCreatedAt())
                 .updatedAt(request.getUpdatedAt())
