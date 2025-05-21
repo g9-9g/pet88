@@ -7,6 +7,8 @@ import com.framja.itss.medical.entity.Prescription;
 import com.framja.itss.medical.service.MedicineService;
 import com.framja.itss.medical.service.PrescriptionService;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
+import com.framja.itss.medical.dto.medicine.MedicineDto;
+import com.framja.itss.medical.dto.medicine.CreateMedicineRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,7 @@ public class MedicalPrescriptionController {
     @GetMapping("/appointment/{appointmentId}")
     public ResponseEntity<List<PrescriptionDto>> getPrescriptionsByAppointment(@PathVariable Long appointmentId) {
         List<PrescriptionDto> dtos = prescriptionService.findByAppointmentId(appointmentId).stream()
-                .map(this::toDto)
+                .map(prescription -> prescriptionService.convertToDto(prescription))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
@@ -44,7 +46,7 @@ public class MedicalPrescriptionController {
                 .usageInstructions(dto.getUsageInstructions())
                 .build();
         Prescription saved = prescriptionService.save(prescription);
-        return ResponseEntity.ok(toDto(saved));
+        return ResponseEntity.ok(prescriptionService.convertToDto(saved));
     }
 
     @PostMapping("/appointment/{appointmentId}/batch")
@@ -58,26 +60,15 @@ public class MedicalPrescriptionController {
                     .quantity(dto.getQuantity())
                     .usageInstructions(dto.getUsageInstructions())
                     .build();
-            return toDto(prescriptionService.save(prescription));
+            return prescriptionService.convertToDto(prescriptionService.save(prescription));
         }).collect(Collectors.toList());
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/medicine")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Medicine> createMedicine(@RequestBody Medicine medicine) {
-        Medicine saved = medicineService.save(medicine);
+    public ResponseEntity<MedicineDto> createMedicine(@RequestBody CreateMedicineRequest medicineRequest) {
+        MedicineDto saved = medicineService.save(medicineRequest);
         return ResponseEntity.ok(saved);
-    }
-
-    private PrescriptionDto toDto(Prescription prescription) {
-        return PrescriptionDto.builder()
-                .id(prescription.getId())
-                .appointmentId(prescription.getAppointment().getId())
-                .medicineId(prescription.getMedicine().getId())
-                .medicineName(prescription.getMedicine().getName())
-                .quantity(prescription.getQuantity())
-                .usageInstructions(prescription.getUsageInstructions())
-                .build();
     }
 } 

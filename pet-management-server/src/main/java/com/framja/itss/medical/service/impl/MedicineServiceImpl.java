@@ -1,6 +1,8 @@
 package com.framja.itss.medical.service.impl;
 
 import com.framja.itss.medical.entity.Medicine;
+import com.framja.itss.medical.dto.medicine.MedicineDto;
+import com.framja.itss.medical.dto.medicine.CreateMedicineRequest;
 import com.framja.itss.medical.repository.MedicineRepository;
 import com.framja.itss.medical.service.MedicineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,30 @@ public class MedicineServiceImpl implements MedicineService {
     }
 
     @Override
-    public Medicine save(Medicine medicine) {
-        return medicineRepository.save(medicine);
+    public MedicineDto save(CreateMedicineRequest medicineRequest) {
+        Medicine medicine = Medicine.builder()
+                .name(medicineRequest.getName())
+                .description(medicineRequest.getDescription())
+                .unit(medicineRequest.getUnit())
+                .unitPrice(medicineRequest.getUnitPrice())
+                .build();
+        
+        Medicine savedMedicine = medicineRepository.save(medicine);
+        return convertToDto(savedMedicine);
     }
 
     @Override
     public void deleteById(Long id) {
         medicineRepository.deleteById(id);
+    }
+    
+    private MedicineDto convertToDto(Medicine medicine) {
+        return MedicineDto.builder()
+                .id(medicine.getId())
+                .name(medicine.getName())
+                .description(medicine.getDescription())
+                .unit(medicine.getUnit())
+                .unitPrice(medicine.getUnitPrice())
+                .build();
     }
 } 
