@@ -6,7 +6,15 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     <UserProvider>
       <>
         {children}
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            className: "!text-sm",
+            classNames: {
+              success: "!bg-green-500 !text-white",
+              error: "!bg-brand !text-white",
+            },
+          }}
+        />
       </>
     </UserProvider>
   );

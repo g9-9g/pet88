@@ -14,8 +14,8 @@ const GenericDashboardPage = () => {
         case "ROLE_PET_OWNER":
           router.replace("/dashboard/owner");
           break;
-        case "ROLE_DOCTOR":
-          router.replace("/dashboard/doctor");
+        case "ROLE_VET":
+          router.replace("/dashboard/vet");
           break;
         case "ROLE_STAFF":
           router.replace("/dashboard/staff");

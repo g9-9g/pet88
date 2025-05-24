@@ -118,6 +118,13 @@
   @apply bg-brand text-white;
 }
 
+.toaster {
+  --success-bg: #dcfce7; /* Tailwind green-100 */
+  --success-text: #166534; /* Tailwind green-900 */
+  --error-bg: #fee2e2; /* Tailwind red-100 */
+  --error-text: #991b1b; /* Tailwind red-900 */
+}
+
 @layer components {
   .header {
     @apply flex items-center justify-between p-4 bg-white;

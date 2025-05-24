@@ -1,4 +1,4 @@
-import Navbar from "@/components/common/navbar/Navbar";
+import Navbar from "@/components/layout/Navbar";
 import { Toaster } from "@/components/ui/sonner";
 
 export default function MarketingLayout({

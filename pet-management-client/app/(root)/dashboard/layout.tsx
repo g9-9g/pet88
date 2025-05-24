@@ -10,13 +10,9 @@ export default function DashboardLayout({
 }) {
   return (
     <main className="flex h-screen">
-      <Sidebar
-        fullName="John Doe"
-        avatar="/assets/images/Seia_ball.png"
-        email="john.doe@example.com"
-      />
+      <Sidebar />
       <section className="flex h-full flex-1 flex-col">
-        <Header ownerId="123" accountId="123" />
+        <Header />
         <div className="main-content">{children}</div>
       </section>
     </main>
