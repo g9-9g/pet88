@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.framja.itss.grooming.entity.GroomingRequest;
-import com.framja.itss.grooming.entity.GroomingRequestStatus;
+import com.framja.itss.common.enums.GroomingRequestStatus;
 
 public interface GroomingRequestRepository extends JpaRepository<GroomingRequest, Long> {
     

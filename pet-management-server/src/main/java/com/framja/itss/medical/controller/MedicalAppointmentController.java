@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.framja.itss.medical.dto.MedicalAppointmentDto;
-import com.framja.itss.medical.dto.MedicalAppointmentDetailDto;
-import com.framja.itss.medical.dto.UpdateAppointmentDto;
-import com.framja.itss.medical.dto.CreateAppointmentDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDetailDto;
+import com.framja.itss.medical.dto.appointment.UpdateAppointmentDto;
+import com.framja.itss.medical.dto.appointment.CreateAppointmentDto;
 import com.framja.itss.medical.service.MedicalAppointmentService;
 import com.framja.itss.users.entity.User;
 

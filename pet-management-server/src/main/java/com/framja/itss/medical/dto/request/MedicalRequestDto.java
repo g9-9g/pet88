@@ -1,8 +1,8 @@
-package com.framja.itss.medical.dto;
+package com.framja.itss.medical.dto.request;
 
 import java.time.LocalDateTime;
 
-import com.framja.itss.common.enums.RequestStatus;
+import com.framja.itss.common.enums.MedicalRequestStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class MedicalRequestDto {
     private String symptoms;
     private String notes;
     private LocalDateTime preferredDateTime;
-    private RequestStatus requestStatus;
+    private MedicalRequestStatus status;
     private String rejectionReason;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

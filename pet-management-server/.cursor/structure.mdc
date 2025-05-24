@@ -3,4 +3,11 @@ description:
 globs: 
 alwaysApply: true
 ---
-Code should follow this structure [project-stucture.txt](mdc:docs/project-stucture.txt) , Code maintainability.
+Code should follow this structure [project-stucture.txt](mdc:docs/project-stucture.txt) , Code follow SOLID principal:
+
+-	SRP: Với mỗi module chức năng của chương trình, chia nhỏ thành nhiều thành phần ứng với các trách nhiệm khác nhau
+-	OCP: Với các service, tạo một interface cơ sở để khai báo các chức năng, sau đó tạo các implementation để cài đặt logic cho các chức năng đó. Nếu sau này muốn mở rộng một cách khác để thực hiện các chức năng thì chúng ta sẽ implement từ interface để tạo một implementation mới, thay vì phải sửa đổi trong implementation cũ đã hoạt động ổn định.
+-	ISP: Tầng repository tuy chứa các truy vấn đến cơ sở dữ liệu, tuy nhiên do với mỗi thực thể có thể có các loại truy vấn tùy chỉnh cho mục đích khác nhau, nên ta sẽ khai báo từng interface repository riêng rẽ cho từng thực thể thay vì gộp chung vào một interface tổng hợp.
+-	DIP: Ở mỗi module tầng dưới sẽ khai báo một interface để module tầng trên gọi xuống, và cung cấp implementation cho interface này. Như vậy cả hai module sẽ không phụ thuộc trực tiếp vào nhau mà chỉ phụ thuộc vào interface, thay đổi ở module tầng dưới sẽ không gây ảnh hưởng trực tiếp đến module tầng trên. VD: các interface giữa tầng service và tầng controller.
+
+

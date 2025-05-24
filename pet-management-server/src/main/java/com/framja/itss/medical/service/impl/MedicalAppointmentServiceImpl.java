@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
-import com.framja.itss.medical.dto.MedicalAppointmentDto;
-import com.framja.itss.medical.dto.MedicalAppointmentDetailDto;
-import com.framja.itss.medical.dto.UpdateAppointmentDto;
-import com.framja.itss.medical.dto.CreateAppointmentDto;
-import com.framja.itss.medical.dto.PrescriptionDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDetailDto;
+import com.framja.itss.medical.dto.appointment.UpdateAppointmentDto;
+import com.framja.itss.medical.dto.appointment.CreateAppointmentDto;
+import com.framja.itss.medical.dto.medicine.PrescriptionDto;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.service.MedicalAppointmentService;
@@ -22,7 +22,6 @@ import com.framja.itss.medical.service.PrescriptionService;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.users.repository.UserRepository;
-import com.framja.itss.common.enums.RoleName;
 import com.framja.itss.pets.repository.PetRepository;
 
 @Service

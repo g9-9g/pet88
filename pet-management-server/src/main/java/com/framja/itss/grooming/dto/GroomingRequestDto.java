@@ -2,7 +2,7 @@ package com.framja.itss.grooming.dto;
 
 import java.time.LocalDateTime;
 
-import com.framja.itss.grooming.entity.GroomingRequestStatus;
+import com.framja.itss.common.enums.GroomingRequestStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

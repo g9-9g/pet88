@@ -83,7 +83,18 @@ public class GroomingServiceServiceImpl implements GroomingServiceService {
     public Page<GroomingServiceDto> getFilteredServicesWithPagination(
             String name, Double minPrice, Double maxPrice, Boolean isActive,
             String sortBy, String sortDir, int page, int size) {
-        
+
+        if (!("name".equalsIgnoreCase(sortBy) || "price".equalsIgnoreCase(sortBy) || "duration".equalsIgnoreCase(sortBy))) {
+            throw new IllegalArgumentException("Invalid sortBy value. Allowed values are: name, price, duration.");
+        }
+        if (!("asc".equalsIgnoreCase(sortDir) || "desc".equalsIgnoreCase(sortDir))) {
+            throw new IllegalArgumentException("Invalid sortDir value. Allowed values are: asc, desc.");
+        }
+
+        if ("duration".equalsIgnoreCase(sortBy)) {
+                sortBy = "durationMinutes";
+        }
+
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? 
                 Sort.by(sortBy).ascending() : 
                 Sort.by(sortBy).descending();

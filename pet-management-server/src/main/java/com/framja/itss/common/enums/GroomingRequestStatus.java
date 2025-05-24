@@ -1,4 +1,4 @@
-package com.framja.itss.grooming.entity;
+package com.framja.itss.common.enums;
 
 public enum GroomingRequestStatus {
     PENDING,     // Initial state when request is created

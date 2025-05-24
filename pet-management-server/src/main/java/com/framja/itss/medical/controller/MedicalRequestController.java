@@ -2,7 +2,7 @@ package com.framja.itss.medical.controller;
 
 import java.util.List;
 
-import com.framja.itss.common.enums.RequestStatus;
+import com.framja.itss.common.enums.MedicalRequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,12 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.framja.itss.common.enums.RequestHandleStatus;
-import com.framja.itss.medical.dto.HandleRequestDto;
-import com.framja.itss.medical.dto.CreateMedicalRequestDto;
-import com.framja.itss.medical.dto.MedicalRequestDto;
-import com.framja.itss.medical.dto.UpdateMedicalRequestDto;
-import com.framja.itss.medical.dto.UpdateRequestStatusDto;
+import com.framja.itss.medical.dto.request.CreateMedicalRequestDto;
+import com.framja.itss.medical.dto.request.MedicalRequestDto;
+import com.framja.itss.medical.dto.request.UpdateMedicalRequestDto;
+import com.framja.itss.medical.dto.request.UpdateRequestStatusDto;
 import com.framja.itss.medical.service.MedicalRequestService;
 import com.framja.itss.users.entity.User;
 
@@ -48,8 +46,8 @@ public class MedicalRequestController {
     @GetMapping
     public ResponseEntity<List<MedicalRequestDto>> getAllRequests(
             @RequestParam(required = false) String ownerName,
-            @RequestParam(required = false) RequestStatus requestStatus) {
-        List<MedicalRequestDto> requests = requestService.getAllRequests(ownerName, requestStatus);
+            @RequestParam(required = false) MedicalRequestStatus medicalRequestStatus) {
+        List<MedicalRequestDto> requests = requestService.getAllRequests(ownerName, medicalRequestStatus);
         return ResponseEntity.ok(requests);
     }
 
@@ -76,25 +74,21 @@ public class MedicalRequestController {
     @PostMapping("/{requestId}/handle")
     @PreAuthorize("hasAnyRole('ROLE_STAFF', 'ROLE_ADMIN')")
     public ResponseEntity<MedicalRequestDto> handleRequest(
-            @PathVariable Long requestId, 
-            @Valid @RequestBody HandleRequestDto handleDto,
+            @PathVariable Long requestId,
+            @Valid @RequestBody UpdateRequestStatusDto updateDto,
             @AuthenticationPrincipal User user) {
-        UpdateRequestStatusDto updateDto = new UpdateRequestStatusDto();
-        if (handleDto.getStatus() == RequestHandleStatus.ACCEPT) {
-            updateDto.setRequestStatus(RequestStatus.ACCEPTED);
-            if (handleDto.getDoctorId() == null) {
-                throw new IllegalArgumentException("Doctor ID is required");
-            }
-            updateDto.setDoctorId(handleDto.getDoctorId());
-        } else {
-            updateDto.setRequestStatus(RequestStatus.REJECTED);
-            if (handleDto.getRejectionReason() == null) {
-                throw new IllegalArgumentException("Rejection reason is required");
-            }
-            updateDto.setRejectionReason(handleDto.getRejectionReason());
-        }
         updateDto.setStaffId(user.getId());
+        if (updateDto.getStatus() == MedicalRequestStatus.ACCEPTED) {
+            if (updateDto.getDoctorId() == null) {
+                throw new IllegalArgumentException("Doctor ID is required for accepting request");
+            }
+        } else if (updateDto.getStatus() == MedicalRequestStatus.REJECTED) {
+            if (updateDto.getRejectionReason() == null) {
+                throw new IllegalArgumentException("Rejection reason is required for rejecting request");
+            }
+        }
         MedicalRequestDto requestDto = requestService.updateRequestStatus(requestId, updateDto);
+
         return ResponseEntity.ok(requestDto);
     }
     
