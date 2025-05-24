@@ -1,5 +1,11 @@
 import { useState, useCallback } from "react";
-import { Pet, CreatePetDto, createPet, getOwnedPets } from "@/lib/api/pets";
+import {
+  Pet,
+  CreatePetDto,
+  createPet,
+  getOwnedPets,
+  deletePet,
+} from "@/lib/api/pets";
 import { toast } from "sonner";
 
 export const usePets = () => {
@@ -38,11 +44,28 @@ export const usePets = () => {
     }
   }, []);
 
+  const removePet = useCallback(async (petId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await deletePet(petId);
+      setPets((prev) => prev.filter((pet) => pet.petId !== petId));
+      toast.success("Pet deleted successfully");
+    } catch (err) {
+      setError("Failed to delete pet");
+      toast.error("Failed to delete pet");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     pets,
     loading,
     error,
     fetchPets,
     addPet,
+    removePet,
   };
 };

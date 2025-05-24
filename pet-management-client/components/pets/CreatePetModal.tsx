@@ -28,7 +28,7 @@ export const CreatePetModal = ({ ownerId, onSuccess }: CreatePetModalProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="shadow-sm py-3 rounded-full text-black hover:text-white hover:bg-brand-100 cursor-pointer">
           <Plus className="mr-2 h-4 w-4" />
           Add Pet
         </Button>

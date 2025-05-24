@@ -88,8 +88,6 @@ export const CreatePetForm = ({
     toast.error("Please check the form for errors");
   };
 
-  console.log(ownerId);
-
   return (
     <Form {...form}>
       <form
@@ -244,7 +242,7 @@ export const CreatePetForm = ({
           </Button>
           <Button
             type="submit"
-            className="bg-brand text-white hover:bg-brand-100 border border-black"
+            className="bg-brand text-white hover:bg-brand-100 border border-brand"
           >
             Create Pet
           </Button>

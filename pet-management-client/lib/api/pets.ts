@@ -51,3 +51,15 @@ export const searchPets = async (params: {
   const response = await publicApi.get<Pet[]>("/api/pets/search", { params });
   return response.data;
 };
+
+export const updatePet = async (
+  petId: number,
+  data: CreatePetDto
+): Promise<Pet> => {
+  const response = await privateApi.put<Pet>(`/api/pets/${petId}`, data);
+  return response.data;
+};
+
+export const deletePet = async (petId: number): Promise<void> => {
+  await privateApi.delete(`/api/pets/${petId}`);
+};

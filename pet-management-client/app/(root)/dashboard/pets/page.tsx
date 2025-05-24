@@ -2,14 +2,16 @@
 
 import { useUser } from "@/context/UserContext";
 import { CreatePetModal } from "@/components/pets/CreatePetModal";
-import { Toaster } from "sonner";
 import { usePets } from "@/hooks/use-pets";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import PetCard from "@/components/pets/PetCard";
+import { DeletePetModal } from "@/components/pets/DeletePetModal";
+import { Pet } from "@/lib/api/pets";
 
 const PetsPage = () => {
   const { user } = useUser();
-  console.log(user);
-  const { pets, loading, error, fetchPets } = usePets();
+  const { pets, loading, error, fetchPets, removePet } = usePets();
+  const [petToDelete, setPetToDelete] = useState<Pet | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -19,6 +21,17 @@ const PetsPage = () => {
 
   const handleSuccess = () => {
     fetchPets();
+  };
+
+  const handleDeleteClick = (pet: Pet) => {
+    setPetToDelete(pet);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (petToDelete) {
+      await removePet(petToDelete.petId);
+      setPetToDelete(null);
+    }
   };
 
   return (
@@ -31,18 +44,25 @@ const PetsPage = () => {
       {loading && <div>Loading...</div>}
       {error && <div className="text-red-500">{error}</div>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {pets.map((pet) => (
-          <div key={pet.petId} className="p-4 border rounded-lg">
-            <h3 className="text-lg font-semibold">{pet.name}</h3>
-            <p>Species: {pet.species}</p>
-            <p>Breed: {pet.breed}</p>
-            <p>Gender: {pet.gender}</p>
-          </div>
+          <PetCard
+            key={pet.petId}
+            pet={pet}
+            onUpdate={handleSuccess}
+            onDeleteClick={handleDeleteClick}
+          />
         ))}
       </div>
 
-      <Toaster />
+      {petToDelete && (
+        <DeletePetModal
+          pet={petToDelete}
+          open={!!petToDelete}
+          onOpenChange={(open) => !open && setPetToDelete(null)}
+          onConfirm={handleDeleteConfirm}
+        />
+      )}
     </div>
   );
 };
