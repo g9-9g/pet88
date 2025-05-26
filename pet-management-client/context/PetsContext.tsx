@@ -1,4 +1,12 @@
-import { useState, useCallback } from "react";
+"use client";
+
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useCallback,
+} from "react";
 import {
   Pet,
   CreatePetDto,
@@ -8,7 +16,22 @@ import {
 } from "@/lib/api/pets";
 import { toast } from "sonner";
 
-export const usePets = () => {
+interface PetsContextType {
+  pets: Pet[];
+  loading: boolean;
+  error: string | null;
+  fetchPets: () => Promise<void>;
+  addPet: (petData: CreatePetDto) => Promise<Pet>;
+  removePet: (petId: number) => Promise<void>;
+}
+
+const PetsContext = createContext<PetsContextType | undefined>(undefined);
+
+interface PetsProviderProps {
+  children: ReactNode;
+}
+
+export const PetsProvider = ({ children }: PetsProviderProps) => {
   const [pets, setPets] = useState<Pet[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,12 +83,26 @@ export const usePets = () => {
     }
   }, []);
 
-  return {
-    pets,
-    loading,
-    error,
-    fetchPets,
-    addPet,
-    removePet,
-  };
+  return (
+    <PetsContext.Provider
+      value={{
+        pets,
+        loading,
+        error,
+        fetchPets,
+        addPet,
+        removePet,
+      }}
+    >
+      {children}
+    </PetsContext.Provider>
+  );
+};
+
+export const usePets = (): PetsContextType => {
+  const context = useContext(PetsContext);
+  if (context === undefined) {
+    throw new Error("usePets must be used within a PetsProvider");
+  }
+  return context;
 };
