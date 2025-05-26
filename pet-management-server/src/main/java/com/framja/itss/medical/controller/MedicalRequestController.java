@@ -2,7 +2,6 @@ package com.framja.itss.medical.controller;
 
 import java.util.List;
 
-import com.framja.itss.common.enums.MedicalRequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.framja.itss.common.enums.MedicalRequestStatus;
 import com.framja.itss.medical.dto.request.CreateMedicalRequestDto;
 import com.framja.itss.medical.dto.request.MedicalRequestDto;
 import com.framja.itss.medical.dto.request.UpdateMedicalRequestDto;
@@ -45,10 +45,18 @@ public class MedicalRequestController {
 
     @GetMapping
     public ResponseEntity<List<MedicalRequestDto>> getAllRequests(
-            @RequestParam(required = false) String ownerName,
+            @RequestParam(required = false) Long ownerId,
             @RequestParam(required = false) MedicalRequestStatus medicalRequestStatus) {
-        List<MedicalRequestDto> requests = requestService.getAllRequests(ownerName, medicalRequestStatus);
+        List<MedicalRequestDto> requests = requestService.getAllRequests(ownerId, medicalRequestStatus);
         return ResponseEntity.ok(requests);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countRequests(
+            @RequestParam(required = false) Long ownerId,
+            @RequestParam(required = false) MedicalRequestStatus medicalRequestStatus) {
+        long count = requestService.countRequests(ownerId, medicalRequestStatus);
+        return ResponseEntity.ok(count);
     }
 
     @GetMapping("/{requestId}")

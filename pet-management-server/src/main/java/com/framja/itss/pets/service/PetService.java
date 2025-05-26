@@ -31,4 +31,9 @@ public interface PetService {
 
     // Lấy danh sách Pet đã có appointment completed=true, có thể lọc theo ownerId
     List<PetDto> getPetsWithCompletedAppointments(Long ownerId);
+
+    // Methods for counting pets
+    Long getPetsCountByOwnerId(Long ownerId);
+    Long getTotalPetsCount();
+    Long getFilteredPetsCount(String name, String species, String breed, String gender, Long ownerId);
 } 

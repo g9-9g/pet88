@@ -170,4 +170,19 @@ public class PetServiceImpl implements PetService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Long getPetsCountByOwnerId(Long ownerId) {
+        return petRepository.countByOwner_Id(ownerId);
+    }
+
+    @Override
+    public Long getTotalPetsCount() {
+        return petRepository.count();
+    }
+
+    @Override
+    public Long getFilteredPetsCount(String name, String species, String breed, String gender, Long ownerId) {
+        return petRepository.countPetsWithFilters(name, species, breed, gender, ownerId);
+    }
 } 

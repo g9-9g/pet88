@@ -81,4 +81,19 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
 
     @Query("SELECT DISTINCT p FROM Pet p JOIN MedicalAppointment a ON a.pet = p WHERE a.status = com.framja.itss.common.enums.AppointmentStatus.COMPLETED AND (:ownerId IS NULL OR p.owner.id = :ownerId)")
     List<Pet> findPetsWithCompletedAppointments(@Param("ownerId") Long ownerId);
+
+    Long countByOwner_Id(Long ownerId);
+
+    @Query("SELECT COUNT(p) FROM Pet p WHERE " +
+            "(:name IS NULL OR p.name LIKE %:name%) AND " +
+            "(:species IS NULL OR p.species = :species) AND " +
+            "(:breed IS NULL OR p.breed = :breed) AND " +
+            "(:gender IS NULL OR p.gender = :gender) AND " +
+            "(:ownerId IS NULL OR p.owner.id = :ownerId)")
+    Long countPetsWithFilters(
+            @Param("name") String name,
+            @Param("species") String species,
+            @Param("breed") String breed,
+            @Param("gender") String gender,
+            @Param("ownerId") Long ownerId);
 } 
