@@ -14,7 +14,8 @@ public interface MedicalRequestService {
     List<MedicalRequestDto> getRequestsByOwnerId(Long ownerId);
     List<MedicalRequestDto> getPendingRequests();
     MedicalRequestDto updateRequestStatus(Long requestId, UpdateRequestStatusDto updateDto);
-    List<MedicalRequestDto> getAllRequests(String ownerName, MedicalRequestStatus medicalRequestStatus);
+    List<MedicalRequestDto> getAllRequests(Long ownerId, MedicalRequestStatus medicalRequestStatus);
     void deleteRequest(Long requestId, Long userId);
     MedicalRequestDto updateRequest(Long requestId, UpdateMedicalRequestDto updateDto, Long userId);
+    long countRequests(Long ownerId, MedicalRequestStatus medicalRequestStatus);
 } 

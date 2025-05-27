@@ -1,14 +1,25 @@
 package com.framja.itss.booking.controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.framja.itss.booking.dto.BookingDTO;
 import com.framja.itss.booking.entity.BookingStatus;
 import com.framja.itss.booking.service.BookingService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import com.framja.itss.users.entity.User;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -18,10 +29,12 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<List<BookingDTO>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
+
+    
 
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
@@ -41,33 +54,32 @@ public class BookingController {
 
     // Owner endpoints
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> createBooking(
             @RequestBody BookingDTO bookingDTO) {
         return ResponseEntity.ok(bookingService.createBooking(bookingDTO));
     }
 
     @GetMapping("/my-bookings")
-    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<List<BookingDTO>> getMyBookings(
-            @RequestParam Long ownerId) {
-        return ResponseEntity.ok(bookingService.getMyBookings(ownerId));
+        @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(bookingService.getMyBookings(user.getId()));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> getBookingById(
-            @PathVariable Long id,
-            @RequestParam Long ownerId) {
-        return ResponseEntity.ok(bookingService.getBookingById(id, ownerId));
+            @PathVariable Long id) {
+        return ResponseEntity.ok(bookingService.getBookingById(id));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_OWNER')")
+    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<Void> cancelBooking(
             @PathVariable Long id,
-            @RequestParam Long ownerId) {
-        bookingService.cancelBooking(id, ownerId);
+            @AuthenticationPrincipal User user) {
+        bookingService.cancelBooking(id, user.getId());
         return ResponseEntity.ok().build();
     }
 } 

@@ -5,7 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
+import com.framja.itss.booking.util.BookingFeeCalculator;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,11 +48,29 @@ public class Booking {
     @Column(name = "special_care_notes", length = 1000)
     private String specialCareNotes;
 
+    @Formula("(SELECT calculate_total_fee(r.nightly_fee, r.clean_fee, r.service_fee, b1_0.check_in_time, b1_0.check_out_time, r.type) " +
+             "FROM rooms r WHERE r.id = b1_0.room_id)")
+    private BigDecimal estimatedFee;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PostLoad
+    protected void onLoad() {
+        if (room != null && checkInTime != null && checkOutTime != null) {
+            estimatedFee = BookingFeeCalculator.calculateTotalFee(
+                room.getNightlyFee(),
+                room.getCleanFee(),
+                room.getServiceFee(),
+                checkInTime,
+                checkOutTime,
+                room.getType()
+            );
+        }
+    }
 
     @PrePersist
     protected void onCreate() {

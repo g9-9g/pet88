@@ -3,12 +3,12 @@ package com.framja.itss.medical.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.framja.itss.common.enums.MedicalRequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.framja.itss.common.enums.AppointmentStatus;
+import com.framja.itss.common.enums.MedicalRequestStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.medical.dto.request.CreateMedicalRequestDto;
 import com.framja.itss.medical.dto.request.MedicalRequestDto;
@@ -139,15 +139,14 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
     }
 
     @Override
-    public List<MedicalRequestDto> getAllRequests(String ownerName, MedicalRequestStatus medicalRequestStatus) {
+    public List<MedicalRequestDto> getAllRequests(Long ownerId, MedicalRequestStatus medicalRequestStatus) {
         List<MedicalRequest> requests = requestRepository.findAll();
         
         return requests.stream()
                 .filter(request -> {
-                    // Apply owner name filter if provided
-                    if (ownerName != null && !ownerName.isEmpty()) {
-                        String fullName = request.getOwner().getUsername();
-                        if (fullName == null || !fullName.toLowerCase().contains(ownerName.toLowerCase())) {
+                    // Apply owner ID filter if provided
+                    if (ownerId != null) {
+                        if (!request.getOwner().getId().equals(ownerId)) {
                             return false;
                         }
                     }
@@ -163,6 +162,31 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                 })
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public long countRequests(Long ownerId, MedicalRequestStatus medicalRequestStatus) {
+        List<MedicalRequest> requests = requestRepository.findAll();
+        
+        return requests.stream()
+                .filter(request -> {
+                    // Apply owner ID filter if provided
+                    if (ownerId != null) {
+                        if (!request.getOwner().getId().equals(ownerId)) {
+                            return false;
+                        }
+                    }
+                    
+                    // Apply medicalRequestStatus filter if provided
+                    if (medicalRequestStatus != null) {
+                        if (!request.getStatus().equals(medicalRequestStatus)) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                })
+                .count();
     }
     
     @Override

@@ -1,12 +1,14 @@
 package com.framja.itss.booking.dto;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import com.framja.itss.booking.entity.BookingStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -22,6 +24,7 @@ public class BookingDTO {
     private BookingStatus status;
     private boolean isConfirmed;
     private String specialCareNotes;
+    private BigDecimal estimatedFee;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

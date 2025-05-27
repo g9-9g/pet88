@@ -1,26 +1,29 @@
 package com.framja.itss.booking.service.impl;
 
-import com.framja.itss.booking.dto.RoomDTO;
-import com.framja.itss.booking.entity.Room;
-import com.framja.itss.booking.entity.RoomType;
-import com.framja.itss.booking.entity.Booking;
-import com.framja.itss.booking.entity.BookingStatus;
-import com.framja.itss.booking.repository.RoomRepository;
-import com.framja.itss.booking.service.RoomService;
-import com.framja.itss.exception.ResourceNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.domain.Sort;
-import jakarta.persistence.criteria.*;
-import com.framja.itss.booking.dto.RoomRequest;
-import com.framja.itss.booking.util.BookingFeeCalculator;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import com.framja.itss.booking.dto.RoomDTO;
+import com.framja.itss.booking.dto.RoomRequest;
+import com.framja.itss.booking.entity.Booking;
+import com.framja.itss.booking.entity.BookingStatus;
+import com.framja.itss.booking.entity.Room;
+import com.framja.itss.booking.entity.RoomType;
+import com.framja.itss.booking.repository.RoomRepository;
+import com.framja.itss.booking.service.RoomService;
+import com.framja.itss.booking.util.BookingFeeCalculator;
+import com.framja.itss.exception.ResourceNotFoundException;
+
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -156,35 +159,6 @@ public class RoomServiceImpl implements RoomService {
         room.setAvailable(isAvailable);
         Room updatedRoom = roomRepository.save(room);
         return convertToDTO(updatedRoom);
-    }
-
-    private Comparator<Room> getRoomComparator(String sortBy, String sortDir) {
-        if (sortBy == null || sortBy.isEmpty()) sortBy = "nightlyFee";
-        boolean asc = sortDir == null || !"desc".equalsIgnoreCase(sortDir);
-        Comparator<Room> comparator;
-        switch (sortBy) {
-            case "nightlyFee":
-                comparator = Comparator.comparing(Room::getNightlyFee);
-                break;
-            case "cleanFee":
-                comparator = Comparator.comparing(Room::getCleanFee);
-                break;
-            case "serviceFee":
-                comparator = Comparator.comparing(Room::getServiceFee);
-                break;
-            case "averageFee":
-                comparator = Comparator.comparing(Room::getAverageFee);
-                break;
-            case "type":
-                comparator = Comparator.comparing(Room::getType);
-                break;
-            case "createdAt":
-                comparator = Comparator.comparing(Room::getCreatedAt);
-                break;
-            default:
-                comparator = Comparator.comparing(Room::getNightlyFee);
-        }
-        return asc ? comparator : comparator.reversed();
     }
 
     private RoomDTO convertToDTO(Room room) {
