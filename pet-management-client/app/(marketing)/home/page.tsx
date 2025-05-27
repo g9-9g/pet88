@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 import { BsFillPlayCircleFill } from "react-icons/bs";
 
 export default function Home() {
@@ -19,9 +20,11 @@ export default function Home() {
           ngay hôm nay!
         </p>
         <div className="mt-10 flex justify-center items-center gap-5">
-          <button className="text-white bg-brand font-semibold rounded-full px-5 md:py-4 py-2 hover:bg-brand-100 hover:shadow-lg">
-            Create Schedule
-          </button>
+          <Link href="/dashboard/requests">
+            <button className="text-white bg-brand font-semibold rounded-full px-5 md:py-4 py-2 hover:bg-brand-100 hover:shadow-lg cursor-pointer">
+              Create Schedule
+            </button>
+          </Link>
           <button className="bg-gray-50 rounded-full shadow-lg p-2">
             <BsFillPlayCircleFill className="text-brand md:text-5xl text-4xl hover:text-brand-100 hover:shadow-lg" />
           </button>

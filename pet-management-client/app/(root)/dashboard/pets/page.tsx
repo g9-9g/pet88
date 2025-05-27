@@ -2,7 +2,7 @@
 
 import { useUser } from "@/context/UserContext";
 import { CreatePetModal } from "@/components/pets/CreatePetModal";
-import { usePets } from "@/hooks/use-pets";
+import { usePets } from "@/context/PetsContext";
 import { useEffect, useState } from "react";
 import PetCard from "@/components/pets/PetCard";
 import { DeletePetModal } from "@/components/pets/DeletePetModal";
@@ -33,6 +33,8 @@ const PetsPage = () => {
       setPetToDelete(null);
     }
   };
+
+  console.log(pets[0]);
 
   return (
     <div className="container mx-auto py-6">
