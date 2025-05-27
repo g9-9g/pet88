@@ -46,6 +46,12 @@ const RequestsPage = () => {
   const [vets, setVets] = useState<User[]>([]);
 
   useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/sign-in");
+    }
+  }, [user, isLoading, router]);
+
+  useEffect(() => {
     const fetchVets = async () => {
       try {
         const vetsList = await getUsersByRole("ROLE_VET");
@@ -72,7 +78,6 @@ const RequestsPage = () => {
   }
 
   if (!user) {
-    router.push("/sign-in");
     return null;
   }
 
