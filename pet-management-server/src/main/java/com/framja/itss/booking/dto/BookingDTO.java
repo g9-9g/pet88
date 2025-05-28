@@ -28,35 +28,3 @@ public class BookingDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-class CreateBookingRequest {
-    private Long petId;
-    private Long roomId;
-    private LocalDateTime checkInTime;
-    private LocalDateTime checkOutTime;
-    private String specialCareNotes;
-}
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-class UpdateBookingRequest {
-    private Long petId;
-    private Long roomId;
-    private LocalDateTime checkInTime;
-    private LocalDateTime checkOutTime;
-    private String specialCareNotes;
-}
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-class UpdateBookingStatusRequest {
-    private BookingStatus status;
-} 

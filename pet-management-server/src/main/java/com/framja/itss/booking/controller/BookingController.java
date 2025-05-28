@@ -56,7 +56,9 @@ public class BookingController {
     @PostMapping
     @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> createBooking(
-            @RequestBody BookingDTO bookingDTO) {
+        @RequestBody BookingDTO bookingDTO,
+        @AuthenticationPrincipal User user) {
+        bookingDTO.setOwnerId(user.getId());
         return ResponseEntity.ok(bookingService.createBooking(bookingDTO));
     }
 
@@ -68,7 +70,7 @@ public class BookingController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_PET_OWNER')")
+    // @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> getBookingById(
             @PathVariable Long id) {
         return ResponseEntity.ok(bookingService.getBookingById(id));
