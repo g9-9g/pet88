@@ -41,9 +41,9 @@ public class Booking {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BookingStatus status = BookingStatus.PENDING;
+    private BookingStatus status;
 
-    private boolean isConfirmed = false;
+    private boolean isConfirmed;
 
     @Column(name = "special_care_notes", length = 1000)
     private String specialCareNotes;
