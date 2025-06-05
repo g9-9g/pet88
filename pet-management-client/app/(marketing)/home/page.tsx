@@ -14,10 +14,9 @@ export default function Home() {
         </h2>
         <p className="md:text-base text-sm font-semibold text-gray-400 mt-5">
           {" "}
-          ✨KOYUKI88 - NHÀ GÁI 🥇HÀNG ĐẦU🥇 KIVOTOS✨ ⁉️ ĐỐ BẠN người bán giỏ
-          cải không muốn bạn biết điều gì? ✅ Đó là 90% Con bạc dừng lại🚫 trước
-          khi họ thắng lớn💹. ⚜️🎲⚜️♥️⚜️♦️⚜️♣️⚜️♠️⚜️🎲⚜️ Đồng hành cùng KOYUKI88
-          ngay hôm nay!
+          NIHAHAHAHA 😆 NIHAHAHAHA 😆 NIHAHAHAHA 😆 NIHAHAHAHA 😆 NIHAHAHAHA 😆
+          UWAAAAH 😭😭😭 UWAAAAH 😭😭😭 UWAAAAH 😭😭😭gomen gomen nihahaha
+          nihahaha ❗❗❗🔟😤 uogh uogh uogh
         </p>
         <div className="mt-10 flex justify-center items-center gap-5">
           <Link href="/dashboard/requests">
