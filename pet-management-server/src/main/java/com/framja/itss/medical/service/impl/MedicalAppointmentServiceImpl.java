@@ -73,8 +73,13 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
     }
 
     @Override
-    public List<MedicalAppointmentDto> getAllAppointments() {
-        List<MedicalAppointment> appointments = appointmentRepository.findAll();
+    public List<MedicalAppointmentDto> getAllAppointments(AppointmentStatus status) {
+        List<MedicalAppointment> appointments;
+        if (status != null) {
+            appointments = appointmentRepository.findByStatus(status);
+        } else {
+            appointments = appointmentRepository.findAll();
+        }
         return appointments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());

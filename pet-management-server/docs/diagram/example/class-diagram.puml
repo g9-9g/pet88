@@ -1,0 +1,23 @@
+@startuml
+class ProfileForm <<boundary>> {
+  + requestUpdateProfile()
+  + submitForm()
+  - validateFields()
+  - notifyError()
+  - displayForm()
+  - redirectToHomePage()
+}
+
+class ProfileController <<control>> {
+  + getUserProfile()
+  + updateProfile()
+}
+
+class User <<entity>> {
+  + getUser()
+  + updateUser()
+}
+
+ProfileForm --> ProfileController
+ProfileController --> User
+@enduml

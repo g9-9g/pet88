@@ -1,0 +1,18 @@
+@startuml
+actor "Người dùng" as User
+boundary AuthForm
+control AuthController
+entity "User Entity" as UserEntity
+
+User -> AuthForm : submitLoginForm()
+AuthForm -> AuthForm : validateFields()
+alt Invalid
+    AuthForm -> User : showError()
+else Valid
+    AuthForm -> AuthController : authenticate(request)
+    AuthController -> UserEntity : validateCredentials()
+    UserEntity --> AuthController : return user info
+    AuthController --> AuthForm : return response
+    AuthForm -> User : redirectToDashboard()
+end
+@enduml 
