@@ -8,7 +8,7 @@ import com.framja.itss.medical.service.MedicineService;
 import com.framja.itss.medical.service.PrescriptionService;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.dto.medicine.MedicineDto;
-import com.framja.itss.medical.dto.medicine.CreateMedicineRequest;
+import com.framja.itss.medical.dto.medicine.MedicineRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/medical/prescriptions")
@@ -65,10 +66,32 @@ public class MedicalPrescriptionController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/medicine")
+    public ResponseEntity<List<MedicineDto>> getAllMedicines() {
+        List<MedicineDto> medicines = medicineService.getAllMedicines();
+        return ResponseEntity.ok(medicines);
+    }
+
     @PostMapping("/medicine")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<MedicineDto> createMedicine(@RequestBody CreateMedicineRequest medicineRequest) {
+    public ResponseEntity<MedicineDto> createMedicine(@Valid @RequestBody MedicineRequest medicineRequest) {
         MedicineDto saved = medicineService.save(medicineRequest);
         return ResponseEntity.ok(saved);
+    }
+
+    @PutMapping("/medicine/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<MedicineDto> updateMedicine(
+            @PathVariable Long id,
+            @Valid @RequestBody MedicineRequest updateRequest) {
+        MedicineDto updated = medicineService.update(id, updateRequest);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/medicine/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteMedicine(@PathVariable Long id) {
+        medicineService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 } 
