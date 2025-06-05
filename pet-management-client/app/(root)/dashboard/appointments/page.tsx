@@ -20,6 +20,7 @@ import { Appointment } from "@/lib/api/appointments";
 import { DiagnosisDialog } from "@/components/appointments/DiagnosisDialog";
 import { CreateAppointmentDto } from "@/lib/api/appointments";
 import { Separator } from "@/components/ui/separator";
+import { AppointmentMedicinesModal } from "@/components/appointments/AppointmentMedicinesModal";
 
 const AppointmentsPage = () => {
   const { user, isLoading } = useUser();
@@ -185,6 +186,11 @@ const AppointmentsPage = () => {
                     >
                       Re-examine
                     </Button>
+                  </div>
+                )}
+                {appointment.completed && (
+                  <div className="mt-4">
+                    <AppointmentMedicinesModal appointmentId={appointment.id} />
                   </div>
                 )}
               </div>
