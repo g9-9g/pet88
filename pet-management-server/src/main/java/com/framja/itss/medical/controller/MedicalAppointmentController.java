@@ -22,6 +22,8 @@ import com.framja.itss.medical.dto.appointment.CreateAppointmentDto;
 import com.framja.itss.medical.service.MedicalAppointmentService;
 import com.framja.itss.users.entity.User;
 
+import com.framja.itss.common.enums.AppointmentStatus;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -32,8 +34,8 @@ public class MedicalAppointmentController {
     private MedicalAppointmentService appointmentService;
 
     @GetMapping
-    public ResponseEntity<List<MedicalAppointmentDto>> getAllAppointments() {
-        List<MedicalAppointmentDto> appointments = appointmentService.getAllAppointments();
+    public ResponseEntity<List<MedicalAppointmentDto>> getAllAppointments(@RequestParam(required = false) AppointmentStatus status) {
+        List<MedicalAppointmentDto> appointments = appointmentService.getAllAppointments(status);
         return ResponseEntity.ok(appointments);
     }
 
