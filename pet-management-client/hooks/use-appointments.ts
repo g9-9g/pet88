@@ -3,6 +3,7 @@ import {
   Appointment,
   CreateAppointmentDto,
   UpdateAppointmentDto,
+  GetAppointmentsParams,
   getOwnerAppointments,
   getDoctorAppointments,
   getAllAppointments,
@@ -18,38 +19,43 @@ export const useAppointments = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAppointments = useCallback(async () => {
-    if (!user) return;
+  const fetchAppointments = useCallback(
+    async (status: GetAppointmentsParams["status"] = "ALL") => {
+      if (!user) return;
 
-    try {
-      setLoading(true);
-      setError(null);
-      let data: Appointment[];
+      try {
+        setLoading(true);
+        setError(null);
+        let data: Appointment[];
 
-      switch (user.role) {
-        case "ROLE_PET_OWNER":
-          data = await getOwnerAppointments();
-          break;
-        case "ROLE_VET":
-          data = await getDoctorAppointments();
-          break;
-        case "ROLE_STAFF":
-        case "ROLE_ADMIN":
-          data = await getAllAppointments();
-          break;
-        default:
-          data = [];
+        const params: GetAppointmentsParams = { status };
+
+        switch (user.role) {
+          case "ROLE_PET_OWNER":
+            data = await getOwnerAppointments(params);
+            break;
+          case "ROLE_VET":
+            data = await getDoctorAppointments(params);
+            break;
+          case "ROLE_STAFF":
+          case "ROLE_ADMIN":
+            data = await getAllAppointments(params);
+            break;
+          default:
+            data = [];
+        }
+
+        setAppointments(data);
+      } catch (err) {
+        console.error("Failed to fetch appointments:", err);
+        setError("Failed to load appointments");
+        toast.error("Failed to load appointments");
+      } finally {
+        setLoading(false);
       }
-
-      setAppointments(data);
-    } catch (err) {
-      console.error("Failed to fetch appointments:", err);
-      setError("Failed to load appointments");
-      toast.error("Failed to load appointments");
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+    },
+    [user]
+  );
 
   const addAppointment = useCallback(
     async (appointmentData: CreateAppointmentDto) => {

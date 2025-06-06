@@ -48,9 +48,9 @@ const AppointmentsPage = () => {
 
   useEffect(() => {
     if (user) {
-      fetchAppointments();
+      fetchAppointments(status as any);
     }
-  }, [user, fetchAppointments]);
+  }, [user, fetchAppointments, status]);
 
   if (isLoading) {
     return <div>Loading user information...</div>;
@@ -62,12 +62,14 @@ const AppointmentsPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "PENDING":
+      case "SCHEDULED":
         return "bg-amber-400";
       case "COMPLETED":
         return "bg-lime-500";
       case "CANCELLED":
         return "bg-red-400";
+      case "FOLLOW_UP":
+        return "bg-blue-400";
       default:
         return "bg-gray-500";
     }
@@ -89,9 +91,8 @@ const AppointmentsPage = () => {
       await updateAppointmentStatus(selectedAppointment.id, {
         ...data,
         status: "COMPLETED",
-        completed: true,
       });
-      await fetchAppointments();
+      await fetchAppointments(status as any);
     } catch (error) {
       console.error("Failed to update appointment:", error);
     }
@@ -105,7 +106,7 @@ const AppointmentsPage = () => {
         appointmentDateTime: data.appointmentDateTime,
       };
       await addAppointment(newAppointment);
-      await fetchAppointments();
+      await fetchAppointments(status as any);
     } catch (error) {
       console.error("Failed to create re-examination appointment:", error);
     }
@@ -123,9 +124,10 @@ const AppointmentsPage = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="SCHEDULED">Scheduled</SelectItem>
               <SelectItem value="COMPLETED">Completed</SelectItem>
               <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              <SelectItem value="FOLLOW_UP">Follow Up</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -153,42 +155,42 @@ const AppointmentsPage = () => {
               <div className="absolute right-8 top-5 text-slate-100 flex flex-col items-end">
                 <Badge
                   className={cn(
-                    getStatusColor(
-                      appointment.completed ? "COMPLETED" : "PENDING"
-                    ),
+                    getStatusColor(appointment.status),
                     "rounded-full px-3 py-1 font-bold tracking-wider shadow-sm"
                   )}
                 >
-                  {appointment.completed ? "COMPLETED" : "PENDING"}
+                  {appointment.status}
                 </Badge>
                 {/* Doctor actions */}
-                {user?.role === "ROLE_VET" && !appointment.completed && (
-                  <div className="mt-4">
-                    <Button
-                      onClick={() => {
-                        setSelectedAppointment(appointment);
-                        setIsDiagnosisOpen(true);
-                      }}
-                      className="border border-green-500 hover:bg-green-500 hover:text-white text-green-500"
-                    >
-                      Diagnose
-                    </Button>
-                  </div>
-                )}
-                {user?.role === "ROLE_VET" && appointment.completed && (
-                  <div className="mt-4">
-                    <Button
-                      onClick={() => {
-                        setSelectedAppointment(appointment);
-                        setIsReExamineOpen(true);
-                      }}
-                      className="border border-blue-500 hover:bg-blue-500 hover:text-white text-blue-500"
-                    >
-                      Re-examine
-                    </Button>
-                  </div>
-                )}
-                {appointment.completed && (
+                {user?.role === "ROLE_VET" &&
+                  appointment.status === "SCHEDULED" && (
+                    <div className="mt-4">
+                      <Button
+                        onClick={() => {
+                          setSelectedAppointment(appointment);
+                          setIsDiagnosisOpen(true);
+                        }}
+                        className="border border-green-500 hover:bg-green-500 hover:text-white text-green-500"
+                      >
+                        Diagnose
+                      </Button>
+                    </div>
+                  )}
+                {user?.role === "ROLE_VET" &&
+                  appointment.status === "COMPLETED" && (
+                    <div className="mt-4">
+                      <Button
+                        onClick={() => {
+                          setSelectedAppointment(appointment);
+                          setIsReExamineOpen(true);
+                        }}
+                        className="border border-blue-500 hover:bg-blue-500 hover:text-white text-blue-500"
+                      >
+                        Re-examine
+                      </Button>
+                    </div>
+                  )}
+                {appointment.status === "COMPLETED" && (
                   <div className="mt-4">
                     <AppointmentMedicinesModal appointmentId={appointment.id} />
                   </div>
@@ -228,15 +230,16 @@ const AppointmentsPage = () => {
                     {appointment.ownerName}
                   </span>
                   {/* Display Doctor if available and completed */}
-                  {appointment.completed && appointment.doctorName && (
-                    <div className="text-lime-500 font-semibold text-base font-mono">
-                      {" "}
-                      | Diagnosed by Dr.{" "}
-                      <span className="font-semibold">
-                        {appointment.doctorName}
-                      </span>
-                    </div>
-                  )}
+                  {appointment.status === "COMPLETED" &&
+                    appointment.doctorName && (
+                      <div className="text-lime-500 font-semibold text-base font-mono">
+                        {" "}
+                        | Diagnosed by Dr.{" "}
+                        <span className="font-semibold">
+                          {appointment.doctorName}
+                        </span>
+                      </div>
+                    )}
                 </div>
                 <div className="grid grid-cols-2 bg-white divide-x divide-gray-300">
                   {/* Column 1 */}
@@ -279,9 +282,7 @@ const AppointmentsPage = () => {
               <div
                 className={cn(
                   "min-h-full w-3 rounded-full absolute left-0",
-                  getStatusColor(
-                    appointment.completed ? "COMPLETED" : "PENDING"
-                  )
+                  getStatusColor(appointment.status)
                 )}
               ></div>
             </Card>
@@ -293,6 +294,7 @@ const AppointmentsPage = () => {
         open={isDiagnosisOpen}
         onOpenChange={setIsDiagnosisOpen}
         onSubmit={handleDiagnosis}
+        appointmentId={selectedAppointment?.id}
       />
 
       <DiagnosisDialog
@@ -300,6 +302,7 @@ const AppointmentsPage = () => {
         onOpenChange={setIsReExamineOpen}
         onSubmit={handleReExamine}
         isReExamine
+        appointmentId={selectedAppointment?.id}
       />
     </div>
   );

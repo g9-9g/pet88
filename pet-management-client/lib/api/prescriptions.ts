@@ -74,3 +74,11 @@ export const getMedicineFromAppointment = async (
   );
   return response.data;
 };
+
+// Get all medicines
+export const getAllMedicine = async (): Promise<Medicine[]> => {
+  const response = await privateApi.get<Medicine[]>(
+    "/api/medical/prescriptions/medicine"
+  );
+  return response.data;
+};

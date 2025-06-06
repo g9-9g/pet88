@@ -2,12 +2,12 @@ import { useState, useCallback } from "react";
 import {
   MedicalRequest,
   CreateMedicalRequestDto,
+  HandleRequestDto,
   createMedicalRequest,
   getMedicalRequests,
   deleteMedicalRequest,
   GetMedicalRequestsParams,
-  acceptMedicalRequest,
-  rejectMedicalRequest,
+  handleMedicalRequest,
 } from "@/lib/api/medical-requests";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
@@ -19,17 +19,19 @@ export const useMedicalRequests = () => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchRequests = useCallback(
-    async (status: GetMedicalRequestsParams["status"] = "ALL") => {
+    async (
+      status: GetMedicalRequestsParams["medicalRequestStatus"] = "ALL"
+    ) => {
       try {
         setLoading(true);
         setError(null);
         const params: GetMedicalRequestsParams = {
-          status,
+          medicalRequestStatus: status,
         };
 
-        // Only add ownerName param for pet owners
+        // Only add ownerId param for pet owners
         if (user?.role === "ROLE_PET_OWNER") {
-          params.ownerName = user.name;
+          params.ownerId = user.id;
         }
 
         const data = await getMedicalRequests(params);
@@ -80,47 +82,23 @@ export const useMedicalRequests = () => {
     }
   }, []);
 
-  const handleAcceptRequest = useCallback(
-    async (requestId: number, doctorId: number) => {
+  const handleRequest = useCallback(
+    async (requestId: number, data: HandleRequestDto) => {
       try {
         setLoading(true);
         setError(null);
-        const updatedRequest = await acceptMedicalRequest(requestId, doctorId);
+        const updatedRequest = await handleMedicalRequest(requestId, data);
         setRequests((prev) =>
           prev.map((request) =>
             request.id === requestId ? updatedRequest : request
           )
         );
-        toast.success("Medical request accepted successfully");
-      } catch (err) {
-        setError("Failed to accept medical request");
-        toast.error("Failed to accept medical request");
-        throw err;
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  const handleRejectRequest = useCallback(
-    async (requestId: number, rejectionReason: string) => {
-      try {
-        setLoading(true);
-        setError(null);
-        const updatedRequest = await rejectMedicalRequest(
-          requestId,
-          rejectionReason
+        toast.success(
+          `Medical request ${data.status.toLowerCase()} successfully`
         );
-        setRequests((prev) =>
-          prev.map((request) =>
-            request.id === requestId ? updatedRequest : request
-          )
-        );
-        toast.success("Medical request rejected successfully");
       } catch (err) {
-        setError("Failed to reject medical request");
-        toast.error("Failed to reject medical request");
+        setError(`Failed to ${data.status.toLowerCase()} medical request`);
+        toast.error(`Failed to ${data.status.toLowerCase()} medical request`);
         throw err;
       } finally {
         setLoading(false);
@@ -136,7 +114,6 @@ export const useMedicalRequests = () => {
     fetchRequests,
     addRequest,
     removeRequest,
-    handleAcceptRequest,
-    handleRejectRequest,
+    handleRequest,
   };
 };
