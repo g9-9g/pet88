@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/tasks/**").hasAnyRole("ADMIN", "STAFF")
                 .requestMatchers("/api/pets/**").permitAll()
                 .requestMatchers("/api/medical/**").permitAll()
+                .requestMatchers("/api/grooming/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(corsFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)

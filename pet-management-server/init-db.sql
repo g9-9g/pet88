@@ -1,6 +1,6 @@
 -- Calculate Average Fee Per Day
 DELIMITER //
-CREATE FUNCTION calculate_avg_fee_per_day(
+CREATE FUNCTION IF NOT EXISTS calculate_avg_fee_per_day(
     nightly_fee DECIMAL(10,2),
     clean_fee DECIMAL(10,2),
     service_fee DECIMAL(10,2),
@@ -38,7 +38,7 @@ DELIMITER ;
 
 -- Calculate Total Fee
 DELIMITER //
-CREATE FUNCTION calculate_total_fee(
+CREATE FUNCTION IF NOT EXISTS calculate_total_fee(
     nightly_fee DECIMAL(10,2),
     clean_fee DECIMAL(10,2),
     service_fee DECIMAL(10,2),

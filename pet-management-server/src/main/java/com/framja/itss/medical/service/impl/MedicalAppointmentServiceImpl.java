@@ -10,19 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.framja.itss.common.enums.AppointmentStatus;
 import com.framja.itss.exception.ResourceNotFoundException;
-import com.framja.itss.medical.dto.appointment.MedicalAppointmentDto;
-import com.framja.itss.medical.dto.appointment.MedicalAppointmentDetailDto;
-import com.framja.itss.medical.dto.appointment.UpdateAppointmentDto;
 import com.framja.itss.medical.dto.appointment.CreateAppointmentDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDetailDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDto;
+import com.framja.itss.medical.dto.appointment.UpdateAppointmentDto;
 import com.framja.itss.medical.dto.medicine.PrescriptionDto;
 import com.framja.itss.medical.entity.MedicalAppointment;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.service.MedicalAppointmentService;
 import com.framja.itss.medical.service.PrescriptionService;
-import com.framja.itss.users.entity.User;
 import com.framja.itss.pets.entity.Pet;
-import com.framja.itss.users.repository.UserRepository;
 import com.framja.itss.pets.repository.PetRepository;
+import com.framja.itss.users.entity.User;
+import com.framja.itss.users.repository.UserRepository;
 
 @Service
 public class MedicalAppointmentServiceImpl implements MedicalAppointmentService {
@@ -47,16 +47,26 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
     }
 
     @Override
-    public List<MedicalAppointmentDto> getAppointmentsByOwnerId(Long ownerId) {
-        List<MedicalAppointment> appointments = appointmentRepository.findByOwnerId(ownerId);
+    public List<MedicalAppointmentDto> getAppointmentsByOwnerId(Long ownerId, AppointmentStatus status) {
+        List<MedicalAppointment> appointments;
+        if (status != null) {
+            appointments = appointmentRepository.findByOwnerIdAndStatus(ownerId, status);
+        } else {
+            appointments = appointmentRepository.findByOwnerId(ownerId);
+        }
         return appointments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<MedicalAppointmentDto> getAppointmentsByDoctorId(Long doctorId) {
-        List<MedicalAppointment> appointments = appointmentRepository.findByDoctorId(doctorId);
+    public List<MedicalAppointmentDto> getAppointmentsByDoctorId(Long doctorId, AppointmentStatus status) {
+        List<MedicalAppointment> appointments;
+        if (status != null) {
+            appointments = appointmentRepository.findByDoctorIdAndStatus(doctorId, status);
+        } else {
+            appointments = appointmentRepository.findByDoctorId(doctorId);
+        }
         return appointments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());

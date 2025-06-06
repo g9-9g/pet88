@@ -11,7 +11,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=hackerphobia
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     restart: always
 
   mysql:
@@ -25,8 +26,28 @@ services:
       - MYSQL_ROOT_PASSWORD=root_password
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     restart: always
+
+  sql-init:
+    image: mysql:8.0
+    container_name: sql_init
+    depends_on:
+      - app
+    entrypoint: >
+      bash -c "
+        sleep 30 &&
+        mysql -h mysql -u root -proot_password httc < /sql/init-data.sql &&
+        mysql -h mysql -u root -proot_password httc < /sql/init-db.sql
+      "
+    volumes:
+      - ./init-db.sql:/sql/init-db.sql
+      - ./init-data.sql:/sql/init-data.sql
+    restart: "no"
 
 volumes:
   mysql_data: 
