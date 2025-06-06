@@ -19,6 +19,8 @@ import com.framja.itss.medical.entity.MedicalRequest;
 import com.framja.itss.medical.repository.MedicalAppointmentRepository;
 import com.framja.itss.medical.repository.MedicalRequestRepository;
 import com.framja.itss.medical.service.MedicalRequestService;
+import com.framja.itss.notification.dto.NotificationDTO;
+import com.framja.itss.notification.service.NotificationService;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
 import com.framja.itss.users.entity.User;
@@ -38,6 +40,9 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
     
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     @Transactional
@@ -116,7 +121,6 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
             User doctor = userRepository.findById(updateDto.getDoctorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id: " + updateDto.getDoctorId()));
             
-            
             // Create appointment
             MedicalAppointment appointment = MedicalAppointment.builder()
                     .request(request)
@@ -130,8 +134,28 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
                     .build();
             
             appointmentRepository.save(appointment);
+
+            // Send notification to owner
+            NotificationDTO ownerNotification = new NotificationDTO();
+            ownerNotification.setUserId(request.getOwner().getId());
+            ownerNotification.setMessage("Yêu cầu khám bệnh của bạn đã được chấp nhận. Lịch hẹn đã được tạo.");
+            notificationService.createNotification(ownerNotification);
+
+            // Send notification to doctor
+            NotificationDTO doctorNotification = new NotificationDTO();
+            doctorNotification.setUserId(doctor.getId());
+            doctorNotification.setMessage("Bạn có một lịch hẹn khám bệnh mới cho thú cưng " + request.getPet().getName() + 
+                    " vào lúc " + request.getPreferredDateTime());
+            notificationService.createNotification(doctorNotification);
+            
         } else if (updateDto.getStatus() == MedicalRequestStatus.REJECTED) {
             request.setRejectionReason(updateDto.getRejectionReason());
+            
+            // Send notification to owner
+            NotificationDTO notificationDTO = new NotificationDTO();
+            notificationDTO.setUserId(request.getOwner().getId());
+            notificationDTO.setMessage("Yêu cầu khám bệnh của bạn đã bị từ chối. Lý do: " + updateDto.getRejectionReason());
+            notificationService.createNotification(notificationDTO);
         }
         
         MedicalRequest updatedRequest = requestRepository.save(request);

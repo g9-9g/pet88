@@ -12,13 +12,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.framja.itss.common.enums.GroomingRequestStatus;
 import com.framja.itss.grooming.dto.GroomingRequestDto;
 import com.framja.itss.grooming.entity.GroomingRequest;
-import com.framja.itss.common.enums.GroomingRequestStatus;
 import com.framja.itss.grooming.entity.GroomingService;
 import com.framja.itss.grooming.repository.GroomingRequestRepository;
 import com.framja.itss.grooming.repository.GroomingServiceRepository;
 import com.framja.itss.grooming.service.GroomingRequestService;
+import com.framja.itss.notification.dto.NotificationDTO;
+import com.framja.itss.notification.service.NotificationService;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
 import com.framja.itss.users.entity.User;
@@ -34,6 +36,7 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
     private final GroomingServiceRepository groomingServiceRepository;
     private final PetRepository petRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -133,6 +136,14 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
         // If status is completed, set the completed date
         if (updateRequest.getStatus() == GroomingRequestStatus.COMPLETED) {
             request.setCompletedDateTime(LocalDateTime.now());
+        }
+        
+        // Send notification to owner
+        if (updateRequest.getStatus() != null) {
+            NotificationDTO notificationDTO = new NotificationDTO();
+            notificationDTO.setUserId(request.getOwner().getId());
+            notificationDTO.setMessage("Trạng thái yêu cầu chăm sóc thú cưng của bạn đã được cập nhật thành: " + updateRequest.getStatus());
+            notificationService.createNotification(notificationDTO);
         }
         
         request = groomingRequestRepository.save(request);
