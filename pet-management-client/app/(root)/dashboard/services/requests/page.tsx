@@ -10,7 +10,6 @@ import { IoArrowBack, IoFilter } from "react-icons/io5";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn, formatDateTime } from "@/lib/utils";
 import { GroomingRequest } from "@/lib/api/services-requests";
-import { usePets } from "@/context/PetsContext";
 import {
   Select,
   SelectContent,
@@ -42,7 +41,6 @@ const ServiceRequestsPage = () => {
     searchRequestsList,
     updateRequestById,
   } = useServicesRequests();
-  const { pets } = usePets();
   const router = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams.get("status") || "ALL";
@@ -102,11 +100,6 @@ const ServiceRequestsPage = () => {
       default:
         return "bg-gray-500";
     }
-  };
-
-  const getPetName = (petId: number) => {
-    const pet = pets.find((p) => p.petId === petId);
-    return pet?.name || `Pet #${petId}`;
   };
 
   const handleStatusChange = (value: string) => {
@@ -284,7 +277,6 @@ const ServiceRequestsPage = () => {
                   isOpen: true,
                   type: "complete",
                   requestId: request.id,
-                  defaultDateTime: request.scheduledDateTime || undefined,
                 })
               }
               className="border border-lime-500 hover:bg-lime-500 hover:text-white text-lime-500"
@@ -388,9 +380,9 @@ const ServiceRequestsPage = () => {
               {/* Right section: Content */}
               <div className="flex-1 p-4 flex flex-col justify-between bg-white">
                 <div className="text-xl font-mono mb-2 ml-0">
-                  Service request for{" "}
+                  {request.service.name} for{" "}
                   <span className="text-2xl font-semibold">
-                    {getPetName(request.petId)}
+                    {request.pet.name}
                   </span>
                 </div>
                 <div className="flex flex-col gap-2 text-gray-500 text-base mb-4 font-mono">

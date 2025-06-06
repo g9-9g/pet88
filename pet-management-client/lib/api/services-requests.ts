@@ -1,4 +1,6 @@
 import { privateApi } from "./client";
+import { Service } from "./services";
+import { Pet } from "./pets";
 
 export type RequestStatus =
   | "PENDING" // Initial state when request is created
@@ -23,6 +25,8 @@ export interface GroomingRequest {
   completedDateTime: string | null;
   createdAt: string;
   updatedAt: string;
+  service: Service;
+  pet: Pet;
 }
 
 export interface CreateRequestDto {
