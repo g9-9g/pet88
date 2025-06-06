@@ -8,21 +8,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.framja.itss.medical.dto.appointment.MedicalAppointmentDto;
-import com.framja.itss.medical.dto.appointment.MedicalAppointmentDetailDto;
-import com.framja.itss.medical.dto.appointment.UpdateAppointmentDto;
-import com.framja.itss.medical.dto.appointment.CreateAppointmentDto;
-import com.framja.itss.medical.service.MedicalAppointmentService;
-import com.framja.itss.users.entity.User;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.framja.itss.common.enums.AppointmentStatus;
+import com.framja.itss.medical.dto.appointment.CreateAppointmentDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDetailDto;
+import com.framja.itss.medical.dto.appointment.MedicalAppointmentDto;
+import com.framja.itss.medical.dto.appointment.UpdateAppointmentDto;
+import com.framja.itss.medical.service.MedicalAppointmentService;
+import com.framja.itss.users.entity.User;
 
 import jakarta.validation.Valid;
 
@@ -48,15 +47,19 @@ public class MedicalAppointmentController {
 
     @GetMapping("/owner")
     @PreAuthorize("hasRole('ROLE_PET_OWNER')")
-    public ResponseEntity<List<MedicalAppointmentDto>> getOwnerAppointments(@AuthenticationPrincipal User user) {
-        List<MedicalAppointmentDto> appointments = appointmentService.getAppointmentsByOwnerId(user.getId());
+    public ResponseEntity<List<MedicalAppointmentDto>> getOwnerAppointments(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) AppointmentStatus status) {
+        List<MedicalAppointmentDto> appointments = appointmentService.getAppointmentsByOwnerId(user.getId(), status);
         return ResponseEntity.ok(appointments);
     }
 
     @GetMapping("/doctor")
     @PreAuthorize("hasRole('ROLE_VET')")
-    public ResponseEntity<List<MedicalAppointmentDto>> getDoctorAppointments(@AuthenticationPrincipal User user) {
-        List<MedicalAppointmentDto> appointments = appointmentService.getAppointmentsByDoctorId(user.getId());
+    public ResponseEntity<List<MedicalAppointmentDto>> getDoctorAppointments(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) AppointmentStatus status) {
+        List<MedicalAppointmentDto> appointments = appointmentService.getAppointmentsByDoctorId(user.getId(), status);
         return ResponseEntity.ok(appointments);
     }
 
