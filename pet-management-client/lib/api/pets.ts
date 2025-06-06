@@ -19,6 +19,13 @@ export interface Pet {
   updatedAt: string;
 }
 
+export interface PaginatedResponse<T> {
+  pets: T[];
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+}
+
 export interface CreatePetDto {
   ownerId: number;
   name: string;
@@ -47,8 +54,11 @@ export const searchPets = async (params: {
   species?: string;
   page?: number;
   size?: number;
-}): Promise<Pet[]> => {
-  const response = await publicApi.get<Pet[]>("/api/pets/search", { params });
+}): Promise<PaginatedResponse<Pet>> => {
+  const response = await publicApi.get<PaginatedResponse<Pet>>(
+    "/api/pets/search",
+    { params }
+  );
   return response.data;
 };
 

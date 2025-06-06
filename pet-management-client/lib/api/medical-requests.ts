@@ -25,8 +25,14 @@ export interface CreateMedicalRequestDto {
 }
 
 export interface GetMedicalRequestsParams {
-  ownerName?: string;
-  status?: "ALL" | "PENDING" | "ACCEPTED" | "REJECTED";
+  ownerId?: number;
+  medicalRequestStatus?: "ALL" | "PENDING" | "ACCEPTED" | "REJECTED";
+}
+
+export interface HandleRequestDto {
+  status: "ACCEPTED" | "REJECTED";
+  doctorId?: number;
+  rejectionReason?: string;
 }
 
 export const createMedicalRequest = async (
@@ -42,8 +48,13 @@ export const createMedicalRequest = async (
 export const getMedicalRequests = async (
   params?: GetMedicalRequestsParams
 ): Promise<MedicalRequest[]> => {
-  const filteredParams =
-    params?.status === "ALL" ? { ownerName: params.ownerName } : params;
+  const filteredParams = {
+    ...params,
+    medicalRequestStatus:
+      params?.medicalRequestStatus === "ALL"
+        ? undefined
+        : params?.medicalRequestStatus,
+  };
 
   const response = await privateApi.get<MedicalRequest[]>(
     "/api/medical/requests",
@@ -76,24 +87,13 @@ export const deleteMedicalRequest = async (id: number): Promise<void> => {
   await privateApi.delete(`/api/medical/requests/${id}`);
 };
 
-export const acceptMedicalRequest = async (
+export const handleMedicalRequest = async (
   requestId: number,
-  doctorId: number
+  data: HandleRequestDto
 ): Promise<MedicalRequest> => {
   const response = await privateApi.post<MedicalRequest>(
-    `/api/medical/requests/${requestId}/accept`,
-    { doctorId }
-  );
-  return response.data;
-};
-
-export const rejectMedicalRequest = async (
-  requestId: number,
-  rejectionReason: string
-): Promise<MedicalRequest> => {
-  const response = await privateApi.post<MedicalRequest>(
-    `/api/medical/requests/${requestId}/reject`,
-    { rejectionReason }
+    `/api/medical/requests/${requestId}/handle`,
+    data
   );
   return response.data;
 };

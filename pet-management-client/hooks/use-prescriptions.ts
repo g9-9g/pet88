@@ -8,6 +8,7 @@ import {
   addMedicineToPrescription,
   addMedicineToPrescriptionBatch,
   getMedicineFromAppointment,
+  getAllMedicine,
 } from "@/lib/api/prescriptions";
 import { toast } from "sonner";
 
@@ -94,6 +95,22 @@ export const usePrescriptions = () => {
     }
   }, []);
 
+  const fetchAllMedicines = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const medicines = await getAllMedicine();
+      return medicines;
+    } catch (err) {
+      console.error("Failed to fetch medicines:", err);
+      setError("Failed to fetch medicines");
+      toast.error("Failed to fetch medicines");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     loading,
     error,
@@ -101,5 +118,6 @@ export const usePrescriptions = () => {
     addMedicine,
     addMedicinesBatch,
     getAppointmentMedicines,
+    fetchAllMedicines,
   };
 };

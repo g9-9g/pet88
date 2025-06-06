@@ -26,14 +26,8 @@ import { toast } from "sonner";
 
 const RequestsPage = () => {
   const { user, isLoading } = useUser();
-  const {
-    requests,
-    loading,
-    error,
-    fetchRequests,
-    handleAcceptRequest,
-    handleRejectRequest,
-  } = useMedicalRequests();
+  const { requests, loading, error, fetchRequests, handleRequest } =
+    useMedicalRequests();
   const searchParams = useSearchParams();
   const router = useRouter();
   const status = searchParams.get("status") || "ALL";
@@ -111,7 +105,10 @@ const RequestsPage = () => {
     }
 
     try {
-      await handleAcceptRequest(requestId, parseInt(selectedVetId));
+      await handleRequest(requestId, {
+        status: "ACCEPTED",
+        doctorId: parseInt(selectedVetId),
+      });
       setActiveForm(null);
       setSelectedVetId("");
     } catch (error) {
@@ -126,7 +123,10 @@ const RequestsPage = () => {
     }
 
     try {
-      await handleRejectRequest(requestId, rejectionReason);
+      await handleRequest(requestId, {
+        status: "REJECTED",
+        rejectionReason: rejectionReason,
+      });
       setActiveForm(null);
       setRejectionReason("");
     } catch (error) {

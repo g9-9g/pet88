@@ -14,8 +14,7 @@ export interface Appointment {
   diagnosis: string | null;
   treatment: string | null;
   notes: string | null;
-  completed: boolean;
-  cancelled: boolean;
+  status: "COMPLETED" | "SCHEDULED" | "CANCELLED" | "FOLLOW_UP";
   createdAt: string;
   updatedAt: string;
 }
@@ -29,33 +28,60 @@ export interface CreateAppointmentDto {
 }
 
 export interface UpdateAppointmentDto {
+  id?: number;
   diagnosis?: string;
   treatment?: string;
   notes?: string;
-  status?: "COMPLETED" | "CANCELLED";
+  status?: "SCHEDULED" | "COMPLETED" | "CANCELLED" | "FOLLOW_UP";
   completed?: boolean;
+  appointmentDateTime?: string;
+}
+
+export interface GetAppointmentsParams {
+  status?: "ALL" | "COMPLETED" | "SCHEDULED" | "CANCELLED" | "FOLLOW_UP";
 }
 
 // Get appointments for pet owner
-export const getOwnerAppointments = async (): Promise<Appointment[]> => {
+export const getOwnerAppointments = async (
+  params?: GetAppointmentsParams
+): Promise<Appointment[]> => {
+  const filteredParams = {
+    ...params,
+    status: params?.status === "ALL" ? undefined : params?.status,
+  };
   const response = await privateApi.get<Appointment[]>(
-    "/api/medical/appointments/owner"
+    "/api/medical/appointments/owner",
+    { params: filteredParams }
   );
   return response.data;
 };
 
 // Get appointments for doctor
-export const getDoctorAppointments = async (): Promise<Appointment[]> => {
+export const getDoctorAppointments = async (
+  params?: GetAppointmentsParams
+): Promise<Appointment[]> => {
+  const filteredParams = {
+    ...params,
+    status: params?.status === "ALL" ? undefined : params?.status,
+  };
   const response = await privateApi.get<Appointment[]>(
-    "/api/medical/appointments/doctor"
+    "/api/medical/appointments/doctor",
+    { params: filteredParams }
   );
   return response.data;
 };
 
 // Get all appointments (public)
-export const getAllAppointments = async (): Promise<Appointment[]> => {
+export const getAllAppointments = async (
+  params?: GetAppointmentsParams
+): Promise<Appointment[]> => {
+  const filteredParams = {
+    ...params,
+    status: params?.status === "ALL" ? undefined : params?.status,
+  };
   const response = await privateApi.get<Appointment[]>(
-    "/api/medical/appointments"
+    "/api/medical/appointments",
+    { params: filteredParams }
   );
   return response.data;
 };
