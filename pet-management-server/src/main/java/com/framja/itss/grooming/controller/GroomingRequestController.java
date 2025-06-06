@@ -82,7 +82,7 @@ public class GroomingRequestController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PET_OWNER', 'ROLE_STAFF')")
     public ResponseEntity<GroomingRequestDto> updateGroomingRequestStatus(
             @PathVariable Long id,
             @RequestBody GroomingRequestDto.UpdateRequest updateRequest,
@@ -99,7 +99,7 @@ public class GroomingRequestController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<?> searchGroomingRequests(
             @RequestParam(required = false) Long ownerId,
             @RequestParam(required = false) Long petId,

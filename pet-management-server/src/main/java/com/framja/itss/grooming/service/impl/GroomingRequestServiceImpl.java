@@ -12,13 +12,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.framja.itss.grooming.dto.GroomingRequestDto;
-import com.framja.itss.grooming.entity.GroomingRequest;
 import com.framja.itss.common.enums.GroomingRequestStatus;
+import com.framja.itss.grooming.dto.GroomingRequestDto;
+import com.framja.itss.grooming.dto.GroomingServiceDto;
+import com.framja.itss.grooming.entity.GroomingRequest;
 import com.framja.itss.grooming.entity.GroomingService;
 import com.framja.itss.grooming.repository.GroomingRequestRepository;
 import com.framja.itss.grooming.repository.GroomingServiceRepository;
 import com.framja.itss.grooming.service.GroomingRequestService;
+import com.framja.itss.notification.dto.NotificationDTO;
+import com.framja.itss.notification.service.NotificationService;
+import com.framja.itss.pets.dto.PetDto;
 import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
 import com.framja.itss.users.entity.User;
@@ -34,6 +38,7 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
     private final GroomingServiceRepository groomingServiceRepository;
     private final PetRepository petRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -135,6 +140,14 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
             request.setCompletedDateTime(LocalDateTime.now());
         }
         
+        // Send notification to owner
+        if (updateRequest.getStatus() != null) {
+            NotificationDTO notificationDTO = new NotificationDTO();
+            notificationDTO.setUserId(request.getOwner().getId());
+            notificationDTO.setMessage("Trạng thái yêu cầu chăm sóc thú cưng của bạn đã được cập nhật thành: " + updateRequest.getStatus());
+            notificationService.createNotification(notificationDTO);
+        }
+        
         request = groomingRequestRepository.save(request);
         return mapToDto(request);
     }
@@ -166,6 +179,35 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
     }
     
     private GroomingRequestDto mapToDto(GroomingRequest entity) {
+        GroomingServiceDto serviceDto = GroomingServiceDto.builder()
+                .id(entity.getService().getId())
+                .name(entity.getService().getName())
+                .description(entity.getService().getDescription())
+                .price(entity.getService().getPrice())
+                .durationMinutes(entity.getService().getDurationMinutes())
+                .isActive(entity.getService().getIsActive())
+                .imageUrl(entity.getService().getImageUrl())
+                .createdAt(entity.getService().getCreatedAt())
+                .updatedAt(entity.getService().getUpdatedAt())
+                .build();
+
+        PetDto petDto = PetDto.builder()
+                .petId(entity.getPet().getPetId())
+                .ownerId(entity.getPet().getOwner().getId())
+                .name(entity.getPet().getName())
+                .species(entity.getPet().getSpecies())
+                .breed(entity.getPet().getBreed())
+                .gender(entity.getPet().getGender())
+                .birthdate(entity.getPet().getBirthdate())
+                .color(entity.getPet().getColor())
+                .avatarUrl(entity.getPet().getAvatarUrl())
+                .healthNotes(entity.getPet().getHealthNotes())
+                .vaccinationHistory(entity.getPet().getVaccinationHistory())
+                .nutritionNotes(entity.getPet().getNutritionNotes())
+                .createdAt(entity.getPet().getCreatedAt())
+                .updatedAt(entity.getPet().getUpdatedAt())
+                .build();
+
         return GroomingRequestDto.builder()
                 .id(entity.getId())
                 .serviceId(entity.getService().getId())
@@ -180,6 +222,8 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
                 .completedDateTime(entity.getCompletedDateTime())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .service(serviceDto)
+                .pet(petDto)
                 .build();
     }
 } 
