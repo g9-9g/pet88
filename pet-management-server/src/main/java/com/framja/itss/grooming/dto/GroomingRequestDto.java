@@ -2,7 +2,9 @@ package com.framja.itss.grooming.dto;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.framja.itss.common.enums.GroomingRequestStatus;
+import com.framja.itss.pets.dto.PetDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GroomingRequestDto {
     private Long id;
     private Long serviceId;
@@ -27,6 +30,12 @@ public class GroomingRequestDto {
     private LocalDateTime completedDateTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private GroomingServiceDto service;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private PetDto pet;
     
     // Simplified version with just IDs for create/update operations
     @Data
