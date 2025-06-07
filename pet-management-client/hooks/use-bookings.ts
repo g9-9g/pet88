@@ -10,6 +10,8 @@ import {
   updateBooking,
   cancelBooking,
   searchBookings,
+  updateBookingStatus,
+  BookingStatus,
 } from "@/lib/api/bookings";
 import { toast } from "sonner";
 
@@ -21,11 +23,11 @@ export const useBookings = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const fetchBookings = useCallback(async () => {
+  const fetchBookings = useCallback(async (status?: BookingStatus) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getBookings();
+      const data = await getBookings(status);
       setBookings(data || []);
       setTotalItems(data?.length || 0);
       setTotalPages(1);
@@ -147,6 +149,28 @@ export const useBookings = () => {
     []
   );
 
+  const updateBookingStatusById = useCallback(
+    async (id: number, status: BookingStatus) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const updatedBooking = await updateBookingStatus(id, status);
+        setBookings((prev) =>
+          prev.map((booking) => (booking.id === id ? updatedBooking : booking))
+        );
+        toast.success("Booking status updated successfully");
+        return updatedBooking;
+      } catch (err) {
+        setError("Failed to update booking status");
+        toast.error("Failed to update booking status");
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
   return {
     bookings,
     loading,
@@ -160,5 +184,6 @@ export const useBookings = () => {
     updateBookingById,
     removeBooking,
     searchBookingsList,
+    updateBookingStatusById,
   };
 };
