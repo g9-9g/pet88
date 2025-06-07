@@ -37,6 +37,20 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public List<BookingDTO> getAllBookingsByStatus(BookingStatus status) {
+        return bookingRepository.findByStatusOrderByCreatedAtDesc(status).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDTO> getMyBookingsByStatus(Long ownerId, BookingStatus status) {
+        return bookingRepository.findByOwnerIdAndStatusOrderByCreatedAtDesc(ownerId, status).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public BookingDTO updateBookingStatus(Long id, BookingStatus status) {
         Booking booking = bookingRepository.findById(id)
