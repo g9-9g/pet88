@@ -29,12 +29,13 @@ public class NotificationController {
     private NotificationService notificationService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<List<NotificationDTO>> getAllNotifications() {
         return ResponseEntity.ok(notificationService.getAllNotifications());
     }
 
     @GetMapping("/owned")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<List<NotificationDTO>> getOwnedNotifications(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) NotificationStatus status) {
@@ -42,7 +43,7 @@ public class NotificationController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<NotificationDTO> updateNotification(
             @PathVariable Long id,
             @RequestBody NotificationDTO notificationDTO) {
@@ -51,7 +52,7 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<Void> deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotification(id);
         return ResponseEntity.ok().build();

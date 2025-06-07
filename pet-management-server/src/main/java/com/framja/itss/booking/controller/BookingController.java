@@ -37,7 +37,7 @@ public class BookingController {
     
 
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> updateBookingStatus(
             @PathVariable Long id,
             @RequestBody BookingStatus status) {
@@ -45,7 +45,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> updateBooking(
             @PathVariable Long id,
             @RequestBody BookingDTO bookingDTO) {

@@ -1,0 +1,168 @@
+@startuml Pet Management System - Conceptual Data Model
+
+' Style configurations
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+' Entities
+entity "User" as user {
+    * id : BIGINT <<PK>>
+    --
+    * username : VARCHAR(255) <<unique>>
+    * password : VARCHAR(255)
+    email : VARCHAR(255)
+    full_name : VARCHAR(255)
+    * locked : BOOLEAN
+    * role : ENUM
+}
+
+entity "Pet" as pet {
+    * pet_id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(100)
+    * species : VARCHAR(50)
+    breed : VARCHAR(100)
+    birthdate : DATE
+    gender : VARCHAR(10)
+    color : VARCHAR(50)
+    avatar_url : VARCHAR(255)
+    health_notes : TEXT
+    nutrition_notes : TEXT
+    vaccination_history : TEXT
+    * user_id : BIGINT <<FK>>
+}
+
+entity "Room" as room {
+    * id : BIGINT <<PK>>
+    --
+    * type : ENUM
+    * is_available : BOOLEAN
+    description : VARCHAR(255)
+    nightly_fee : DECIMAL
+    clean_fee : DECIMAL
+    service_fee : DECIMAL
+}
+
+entity "Booking" as booking {
+    * id : BIGINT <<PK>>
+    --
+    * check_in_time : DATETIME
+    * check_out_time : DATETIME
+    * is_confirmed : BOOLEAN
+    * status : ENUM
+    special_care_notes : VARCHAR(1000)
+    * owner_id : BIGINT <<FK>>
+    * pet_id : BIGINT <<FK>>
+    * room_id : BIGINT <<FK>>
+}
+
+entity "GroomingService" as groomingService {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(100)
+    * price : DECIMAL
+    * duration_minutes : INT
+    * is_active : BOOLEAN
+    description : TEXT
+    image_url : VARCHAR(255)
+}
+
+entity "GroomingRequest" as groomingRequest {
+    * id : BIGINT <<PK>>
+    --
+    * requested_date_time : DATETIME
+    scheduled_date_time : DATETIME
+    completed_date_time : DATETIME
+    * status : ENUM
+    notes : TEXT
+    staff_notes : TEXT
+    * owner_id : BIGINT <<FK>>
+    * pet_id : BIGINT <<FK>>
+    * service_id : BIGINT <<FK>>
+    staff_id : BIGINT <<FK>>
+}
+
+entity "MedicalRequest" as medicalRequest {
+    * id : BIGINT <<PK>>
+    --
+    * preferred_date_time : DATETIME
+    * status : ENUM
+    notes : TEXT
+    symptoms : TEXT
+    rejection_reason : TEXT
+    * owner_id : BIGINT <<FK>>
+    * pet_id : BIGINT <<FK>>
+    updated_by_id : BIGINT <<FK>>
+}
+
+entity "MedicalAppointment" as medicalAppointment {
+    * id : BIGINT <<PK>>
+    --
+    * appointment_date_time : DATETIME
+    * status : ENUM
+    diagnosis : TEXT
+    symptoms : TEXT
+    treatment : TEXT
+    notes : TEXT
+    * doctor_id : BIGINT <<FK>>
+    * owner_id : BIGINT <<FK>>
+    * pet_id : BIGINT <<FK>>
+    request_id : BIGINT <<FK>>
+}
+
+entity "Medicine" as medicine {
+    * id : BIGINT <<PK>>
+    --
+    * name : VARCHAR(255)
+    description : VARCHAR(255)
+    unit : VARCHAR(255)
+    unit_price : DOUBLE
+}
+
+entity "Prescription" as prescription {
+    * id : BIGINT <<PK>>
+    --
+    * quantity : INT
+    usage_instructions : VARCHAR(255)
+    * appointment_id : BIGINT <<FK>>
+    * medicine_id : BIGINT <<FK>>
+}
+
+entity "Task" as task {
+    * id : BIGINT <<PK>>
+    --
+    * title : VARCHAR(255)
+    description : VARCHAR(1000)
+    * completed : BOOLEAN
+    * created_at : DATETIME
+    due_date : DATETIME
+    assignee_id : BIGINT <<FK>>
+}
+
+' Relationships
+user "1" -- "0..*" pet : owns >
+user "1" -- "0..*" booking : makes >
+user "1" -- "0..*" groomingRequest : requests >
+user "1" -- "0..*" medicalRequest : requests >
+user "1" -- "0..*" medicalAppointment : has >
+user "1" -- "0..*" task : assigned to >
+
+pet "1" -- "0..*" booking : has >
+pet "1" -- "0..*" groomingRequest : receives >
+pet "1" -- "0..*" medicalRequest : has >
+pet "1" -- "0..*" medicalAppointment : attends >
+
+room "1" -- "0..*" booking : accommodates >
+
+groomingService "1" -- "0..*" groomingRequest : requested in >
+
+medicalRequest "1" -- "0..1" medicalAppointment : results in >
+
+medicalAppointment "1" -- "0..*" prescription : prescribes >
+
+medicine "1" -- "0..*" prescription : prescribed in >
+
+@enduml 
