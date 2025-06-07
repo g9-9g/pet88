@@ -17,6 +17,7 @@ import com.framja.itss.booking.repository.RoomRepository;
 import com.framja.itss.booking.service.BookingService;
 import com.framja.itss.booking.util.BookingFeeCalculator;
 import com.framja.itss.exception.ResourceNotFoundException;
+import com.framja.itss.pets.service.PetService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,10 +27,25 @@ public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
     private final RoomRepository roomRepository;
+    private final PetService petService;
 
     @Override
     public List<BookingDTO> getAllBookings() {
         return bookingRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDTO> getAllBookingsByStatus(BookingStatus status) {
+        return bookingRepository.findByStatusOrderByCreatedAtDesc(status).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BookingDTO> getMyBookingsByStatus(Long ownerId, BookingStatus status) {
+        return bookingRepository.findByOwnerIdAndStatusOrderByCreatedAtDesc(ownerId, status).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -119,11 +135,17 @@ public class BookingServiceImpl implements BookingService {
     }
 
     private BookingDTO convertToDTO(Booking booking) {
+        String petName = petService.getPetById(booking.getPetId())
+                .map(pet -> pet.getName())
+                .orElse("Unknown Pet");
+
         return BookingDTO.builder()
                 .id(booking.getId())
                 .petId(booking.getPetId())
+                .petName(petName)
                 .ownerId(booking.getOwnerId())
                 .roomId(booking.getRoom().getId())
+                .roomType(booking.getRoom().getType())
                 .checkInTime(booking.getCheckInTime())
                 .checkOutTime(booking.getCheckOutTime())
                 .status(booking.getStatus())
@@ -176,22 +198,9 @@ public class BookingServiceImpl implements BookingService {
 
         // Cập nhật room nếu roomId thay đổi
         if (dto.getRoomId() != null && !dto.getRoomId().equals(booking.getRoom().getId())) {
-            Room room = roomRepository.findById(dto.getRoomId())
+            Room newRoom = roomRepository.findById(dto.getRoomId())
                     .orElseThrow(() -> new ResourceNotFoundException("Room not found with id: " + dto.getRoomId()));
-            booking.setRoom(room);
-        }
-
-        // Cập nhật estimatedFee khi thông tin thay đổi
-        if (booking.getRoom() != null && dto.getCheckInTime() != null && dto.getCheckOutTime() != null) {
-            BigDecimal estimatedFee = BookingFeeCalculator.calculateTotalFee(
-                booking.getRoom().getNightlyFee(),
-                booking.getRoom().getCleanFee(),
-                booking.getRoom().getServiceFee(),
-                dto.getCheckInTime(),
-                dto.getCheckOutTime(),
-                booking.getRoom().getType()
-            );
-            booking.setEstimatedFee(estimatedFee);
+            booking.setRoom(newRoom);
         }
     }
 } 

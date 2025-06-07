@@ -65,6 +65,7 @@ public class UserServiceImpl implements UserService, UserQueryService {
                 .email(user.getEmail())
                 .fullName(user.getFullName())
                 .locked(user.isLocked())
+                .role(user.getRole())
                 .build();
     }
 
@@ -76,6 +77,7 @@ public class UserServiceImpl implements UserService, UserQueryService {
                 .email(userDto.getEmail())
                 .fullName(userDto.getFullName())
                 .locked(userDto.isLocked())
+                .role(userDto.getRole())
                 .build();
     }
 

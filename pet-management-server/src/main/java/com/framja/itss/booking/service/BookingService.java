@@ -9,12 +9,14 @@ import com.framja.itss.booking.entity.BookingStatus;
 public interface BookingService {
     // Admin/Staff operations
     List<BookingDTO> getAllBookings();
+    List<BookingDTO> getAllBookingsByStatus(BookingStatus status);
     BookingDTO updateBookingStatus(Long id, BookingStatus status);
     BookingDTO updateBooking(Long id, BookingDTO bookingDTO);
     
     // Owner operations
     BookingDTO createBooking(BookingDTO bookingDTO);
     List<BookingDTO> getMyBookings(Long ownerId);
+    List<BookingDTO> getMyBookingsByStatus(Long ownerId, BookingStatus status);
     BookingDTO getBookingById(Long id);
     void cancelBooking(Long id, Long ownerId);
     

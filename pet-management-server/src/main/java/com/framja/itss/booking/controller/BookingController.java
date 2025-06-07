@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.framja.itss.booking.dto.BookingDTO;
@@ -30,14 +31,16 @@ public class BookingController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
-    public ResponseEntity<List<BookingDTO>> getAllBookings() {
+    public ResponseEntity<List<BookingDTO>> getAllBookings(
+            @RequestParam(required = false) BookingStatus status) {
+        if (status != null) {
+            return ResponseEntity.ok(bookingService.getAllBookingsByStatus(status));
+        }
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
-    
-
     @PutMapping("/{id}/status")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> updateBookingStatus(
             @PathVariable Long id,
             @RequestBody BookingStatus status) {
@@ -45,7 +48,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
     public ResponseEntity<BookingDTO> updateBooking(
             @PathVariable Long id,
             @RequestBody BookingDTO bookingDTO) {
@@ -65,7 +68,11 @@ public class BookingController {
     @GetMapping("/my-bookings")
     @PreAuthorize("hasRole('ROLE_PET_OWNER')")
     public ResponseEntity<List<BookingDTO>> getMyBookings(
-        @AuthenticationPrincipal User user) {
+        @AuthenticationPrincipal User user,
+        @RequestParam(required = false) BookingStatus status) {
+        if (status != null) {
+            return ResponseEntity.ok(bookingService.getMyBookingsByStatus(user.getId(), status));
+        }
         return ResponseEntity.ok(bookingService.getMyBookings(user.getId()));
     }
 
