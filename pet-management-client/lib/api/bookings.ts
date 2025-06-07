@@ -2,7 +2,12 @@ import { privateApi } from "./client";
 import { Pet } from "./pets";
 import { Room } from "./rooms";
 
-export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+export type BookingStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "CHECKED_IN"
+  | "COMPLETED"
+  | "CANCELLED";
 
 export interface Booking {
   id: number;
@@ -96,6 +101,18 @@ export const searchBookings = async (
   const response = await privateApi.get<PaginatedBookingsResponse>(
     "/api/bookings/search",
     { params }
+  );
+  return response.data;
+};
+
+// Update booking status
+export const updateBookingStatus = async (
+  id: number,
+  status: BookingStatus
+): Promise<Booking> => {
+  const response = await privateApi.put<Booking>(
+    `/api/bookings/${id}/status`,
+    status
   );
   return response.data;
 };
