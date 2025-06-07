@@ -59,10 +59,10 @@ const HotelRequestsPage = () => {
       if (user.role === "ROLE_PET_OWNER") {
         fetchMyBookings();
       } else if (user.role === "ROLE_STAFF" || user.role === "ROLE_ADMIN") {
-        fetchBookings();
+        fetchBookings(status === "ALL" ? undefined : (status as BookingStatus));
       }
     }
-  }, [user, fetchMyBookings, fetchBookings]);
+  }, [user, fetchMyBookings, fetchBookings, status]);
 
   if (isLoading) {
     return <div>Loading user information...</div>;
@@ -196,24 +196,23 @@ const HotelRequestsPage = () => {
           </Button>
           <h1 className="text-3xl font-bold">Room Bookings</h1>
         </div>
-        {(user.role === "ROLE_STAFF" || user.role === "ROLE_ADMIN") && (
-          <div className="w-min px-2">
-            <Select value={status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-full px-4 py-2 font-semibold border-none rounded-full shadow-sm">
-                <IoFilter className="w-6 h-6 mr-2" />
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ALL">All</SelectItem>
-                <SelectItem value="PENDING">Pending</SelectItem>
-                <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                <SelectItem value="CHECKED_IN">Checked In</SelectItem>
-                <SelectItem value="COMPLETED">Completed</SelectItem>
-                <SelectItem value="CANCELLED">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+
+        <div className="w-min px-2">
+          <Select value={status} onValueChange={handleStatusChange}>
+            <SelectTrigger className="w-full px-4 py-2 font-semibold border-none rounded-full shadow-sm">
+              <IoFilter className="w-6 h-6 mr-2" />
+              <SelectValue placeholder="Filter by status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+              <SelectItem value="CHECKED_IN">Checked In</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {loading && <div>Loading...</div>}
@@ -267,9 +266,9 @@ const HotelRequestsPage = () => {
               {/* Right section: Content */}
               <div className="flex-1 p-4 flex flex-col justify-between bg-white">
                 <div className="text-xl font-mono mb-2 ml-0">
-                  {booking.room?.type} Room for{" "}
+                  {booking.roomType} Room for{" "}
                   <span className="text-2xl font-semibold">
-                    {booking.pet?.name}
+                    {booking.petName}
                   </span>
                 </div>
                 <div className="flex flex-col gap-2 text-gray-500 text-base mb-4 font-mono">
@@ -289,6 +288,12 @@ const HotelRequestsPage = () => {
                     Booked at{" "}
                     <span className="font-semibold text-gray-700">
                       {formatDateTime(booking.createdAt).dateTime}
+                    </span>
+                  </div>
+                  <div className="flex flex-row gap-2 items-center">
+                    Estimated Fee:{" "}
+                    <span className="font-semibold text-gray-700">
+                      {booking.estimatedFee.toLocaleString("vi-VN")} VND
                     </span>
                   </div>
                 </div>

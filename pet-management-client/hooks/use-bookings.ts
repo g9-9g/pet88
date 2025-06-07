@@ -23,11 +23,11 @@ export const useBookings = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const fetchBookings = useCallback(async () => {
+  const fetchBookings = useCallback(async (status?: BookingStatus) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getBookings();
+      const data = await getBookings(status);
       setBookings(data || []);
       setTotalItems(data?.length || 0);
       setTotalPages(1);

@@ -12,8 +12,10 @@ export type BookingStatus =
 export interface Booking {
   id: number;
   petId: number;
+  petName: string;
   ownerId: number;
   roomId: number;
+  roomType: string;
   checkInTime: string;
   checkOutTime: string;
   status: BookingStatus;
@@ -22,8 +24,6 @@ export interface Booking {
   createdAt: string;
   updatedAt: string;
   confirmed: boolean;
-  pet?: Pet;
-  room?: Room;
 }
 
 export interface CreateBookingDto {
@@ -61,8 +61,12 @@ export interface PaginatedBookingsResponse {
 }
 
 // Get all bookings
-export const getBookings = async (): Promise<Booking[]> => {
-  const response = await privateApi.get<Booking[]>("/api/bookings");
+export const getBookings = async (
+  status?: BookingStatus
+): Promise<Booking[]> => {
+  const response = await privateApi.get<Booking[]>("/api/bookings", {
+    params: { status },
+  });
   return response.data;
 };
 
