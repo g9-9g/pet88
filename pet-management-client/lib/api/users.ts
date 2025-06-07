@@ -1,4 +1,5 @@
 import { privateApi } from "./client";
+import { UserRole } from "@/lib/utils/role";
 
 export interface User {
   id: number;
@@ -6,6 +7,7 @@ export interface User {
   email: string;
   fullName: string | null;
   locked: boolean;
+  role: UserRole;
 }
 
 export const getUsersByRole = async (role: string): Promise<User[]> => {

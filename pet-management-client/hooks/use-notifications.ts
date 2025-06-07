@@ -57,7 +57,7 @@ export const useNotifications = () => {
         setLoading(true);
         setError(null);
         const newNotification = await createNotification(notificationData);
-        setNotifications((prev) => [...prev, newNotification]);
+
         toast.success("Notification created successfully");
         return newNotification;
       } catch (err) {
@@ -82,7 +82,7 @@ export const useNotifications = () => {
             notification.id === id ? updatedNotification : notification
           )
         );
-        toast.success("Notification updated successfully");
+        toast.success("Marked as read");
         return updatedNotification;
       } catch (err) {
         setError("Failed to update notification");
@@ -98,13 +98,20 @@ export const useNotifications = () => {
   const markAsRead = useCallback(
     async (id: number) => {
       try {
-        await updateNotificationById(id, { status: "READ" });
+        const notification = notifications.find((n) => n.id === id);
+        if (!notification) return;
+
+        await updateNotificationById(id, {
+          userId: notification.userId,
+          message: notification.message,
+          status: "READ",
+        });
       } catch (error) {
         console.error("Failed to mark notification as read:", error);
         toast.error("Failed to mark notification as read");
       }
     },
-    [updateNotificationById]
+    [updateNotificationById, notifications]
   );
 
   const markAllAsRead = useCallback(async () => {
@@ -112,7 +119,13 @@ export const useNotifications = () => {
       setLoading(true);
       const promises = notifications
         .filter((notification) => notification.status === "UNREAD")
-        .map((notification) => markAsRead(notification.id));
+        .map((notification) =>
+          updateNotificationById(notification.id, {
+            userId: notification.userId,
+            message: notification.message,
+            status: "READ",
+          })
+        );
       await Promise.all(promises);
       toast.success("All notifications marked as read");
     } catch (error) {
@@ -121,7 +134,7 @@ export const useNotifications = () => {
     } finally {
       setLoading(false);
     }
-  }, [notifications, markAsRead]);
+  }, [notifications, updateNotificationById]);
 
   return {
     notifications,
