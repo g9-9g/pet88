@@ -1,5 +1,7 @@
 package com.framja.itss.users.dto;
 
+import com.framja.itss.common.enums.RoleName;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,4 +17,5 @@ public class UserDto {
     private String email;
     private String fullName;
     private boolean locked;
+    private RoleName role;
 } 
