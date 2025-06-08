@@ -2,13 +2,20 @@ import { privateApi } from "./client";
 import { Pet } from "./pets";
 import { Room } from "./rooms";
 
-export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+export type BookingStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "CHECKED_IN"
+  | "COMPLETED"
+  | "CANCELLED";
 
 export interface Booking {
   id: number;
   petId: number;
+  petName: string;
   ownerId: number;
   roomId: number;
+  roomType: string;
   checkInTime: string;
   checkOutTime: string;
   status: BookingStatus;
@@ -17,8 +24,6 @@ export interface Booking {
   createdAt: string;
   updatedAt: string;
   confirmed: boolean;
-  pet?: Pet;
-  room?: Room;
 }
 
 export interface CreateBookingDto {
@@ -56,8 +61,12 @@ export interface PaginatedBookingsResponse {
 }
 
 // Get all bookings
-export const getBookings = async (): Promise<Booking[]> => {
-  const response = await privateApi.get<Booking[]>("/api/bookings");
+export const getBookings = async (
+  status?: BookingStatus
+): Promise<Booking[]> => {
+  const response = await privateApi.get<Booking[]>("/api/bookings", {
+    params: { status },
+  });
   return response.data;
 };
 
@@ -96,6 +105,18 @@ export const searchBookings = async (
   const response = await privateApi.get<PaginatedBookingsResponse>(
     "/api/bookings/search",
     { params }
+  );
+  return response.data;
+};
+
+// Update booking status
+export const updateBookingStatus = async (
+  id: number,
+  status: BookingStatus
+): Promise<Booking> => {
+  const response = await privateApi.put<Booking>(
+    `/api/bookings/${id}/status`,
+    status
   );
   return response.data;
 };
