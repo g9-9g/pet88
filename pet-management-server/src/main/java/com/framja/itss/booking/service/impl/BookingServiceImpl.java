@@ -3,7 +3,9 @@ package com.framja.itss.booking.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ import com.framja.itss.booking.service.BookingService;
 import com.framja.itss.booking.util.BookingFeeCalculator;
 import com.framja.itss.exception.ResourceNotFoundException;
 import com.framja.itss.pets.service.PetService;
+import com.framja.itss.common.dto.CountDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -132,6 +135,48 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public boolean hasOverlappingBooking(Long roomId, LocalDateTime checkInTime, LocalDateTime checkOutTime) {
         return bookingRepository.existsOverlappingBooking(roomId, checkInTime, checkOutTime);
+    }
+
+    @Override
+    public CountDTO getBookingCountsByOwnerId(Long ownerId) {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = bookingRepository.countByStatusAndOwnerId(ownerId);
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((BookingStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
+    }
+
+    @Override
+    public CountDTO getBookingCountsAll() {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = bookingRepository.countByStatusAll();
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((BookingStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
     }
 
     private BookingDTO convertToDTO(Booking booking) {

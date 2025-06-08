@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.framja.itss.booking.dto.BookingDTO;
 import com.framja.itss.booking.entity.BookingStatus;
+import com.framja.itss.common.dto.CountDTO;
 
 public interface BookingService {
     // Admin/Staff operations
@@ -25,4 +26,8 @@ public interface BookingService {
     
     // Check booking overlap
     boolean hasOverlappingBooking(Long roomId, LocalDateTime checkInTime, LocalDateTime checkOutTime);
+
+    // Count operations
+    CountDTO getBookingCountsAll();
+    CountDTO getBookingCountsByOwnerId(Long ownerId);
 } 

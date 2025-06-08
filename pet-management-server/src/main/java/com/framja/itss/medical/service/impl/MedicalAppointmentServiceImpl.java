@@ -2,6 +2,7 @@ package com.framja.itss.medical.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.users.repository.UserRepository;
+import com.framja.itss.common.dto.CountDTO;
+
+import java.util.HashMap;
 
 @Service
 public class MedicalAppointmentServiceImpl implements MedicalAppointmentService {
@@ -188,6 +192,73 @@ public class MedicalAppointmentServiceImpl implements MedicalAppointmentService 
         return appointments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public CountDTO getAppointmentCountsByOwnerId(Long ownerId) {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get total count
+        // Long total = appointmentRepository.countByPetOwnerId(ownerId);
+        // countDTO.setTotal(total);
+        
+        // Get status counts
+        List<Object[]> statusCounts = appointmentRepository.countByStatusAndPetOwnerId(ownerId);
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+
+        for (Object[] statusCount : statusCounts) {
+            String status = ((AppointmentStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
+    }
+    
+    @Override
+    public CountDTO getAppointmentCountsByDoctorId(Long doctorId) {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = appointmentRepository.countByStatusAndDoctorId(doctorId);
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((AppointmentStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
+    }
+    
+    @Override
+    public CountDTO getAppointmentCountsAll() {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = appointmentRepository.countByStatusAll();
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((AppointmentStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
     }
     
     private MedicalAppointmentDto convertToDto(MedicalAppointment appointment) {

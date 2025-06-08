@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 
 import com.framja.itss.grooming.dto.GroomingRequestDto;
 import com.framja.itss.common.enums.GroomingRequestStatus;
+import com.framja.itss.common.dto.CountDTO;
 
 public interface GroomingRequestService {
     
@@ -41,4 +42,8 @@ public interface GroomingRequestService {
             String sortDir,
             int page,
             int size);
+    
+    CountDTO getRequestCountsAll();
+    
+    CountDTO getRequestCountsByOwnerId(Long ownerId);
 } 

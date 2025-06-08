@@ -2,8 +2,10 @@ package com.framja.itss.grooming.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,7 @@ import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.users.repository.UserRepository;
+import com.framja.itss.common.dto.CountDTO;
 
 import lombok.RequiredArgsConstructor;
 
@@ -225,5 +228,47 @@ public class GroomingRequestServiceImpl implements GroomingRequestService {
                 .service(serviceDto)
                 .pet(petDto)
                 .build();
+    }
+
+    @Override
+    public CountDTO getRequestCountsByOwnerId(Long ownerId) {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = groomingRequestRepository.countByStatusAndOwnerId(ownerId);
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((GroomingRequestStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
+    }
+
+    @Override
+    public CountDTO getRequestCountsAll() {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = groomingRequestRepository.countByStatusAll();
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((GroomingRequestStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
     }
 } 

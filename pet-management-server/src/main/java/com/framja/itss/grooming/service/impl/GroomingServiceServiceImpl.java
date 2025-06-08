@@ -106,6 +106,12 @@ public class GroomingServiceServiceImpl implements GroomingServiceService {
         
         return servicePage.map(this::mapToDto);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long getServiceCountsAll() {
+        return groomingServiceRepository.count();
+    }
     
     private GroomingService mapToEntity(GroomingServiceDto dto) {
         return GroomingService.builder()

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.framja.itss.grooming.entity.GroomingRequest;
 import com.framja.itss.common.enums.GroomingRequestStatus;
@@ -41,4 +42,15 @@ public interface GroomingRequestRepository extends JpaRepository<GroomingRequest
             LocalDateTime startDate,
             LocalDateTime endDate,
             Pageable pageable);
+
+    @Query("SELECT COUNT(gr) FROM GroomingRequest gr WHERE gr.owner.id = :ownerId")
+    Long countByOwnerId(@Param("ownerId") Long ownerId);
+    
+    @Query("SELECT gr.status as status, COUNT(gr) as count FROM GroomingRequest gr " +
+           "WHERE gr.owner.id = :ownerId GROUP BY gr.status")
+    List<Object[]> countByStatusAndOwnerId(@Param("ownerId") Long ownerId);
+
+    @Query("SELECT gr.status as status, COUNT(gr) as count FROM GroomingRequest gr " +
+           "GROUP BY gr.status")
+    List<Object[]> countByStatusAll();
 } 

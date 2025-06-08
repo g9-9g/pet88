@@ -3,6 +3,7 @@ package com.framja.itss.booking.service;
 import com.framja.itss.booking.dto.RoomDTO;
 import com.framja.itss.booking.entity.Room;
 import com.framja.itss.booking.entity.RoomType;
+import com.framja.itss.common.dto.CountDTO;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -18,4 +19,5 @@ public interface RoomService {
     void deleteRoom(Long id);
     List<RoomDTO> getAvailableRooms(LocalDateTime startTime, LocalDateTime endTime, RoomType type, BigDecimal minPrice, BigDecimal maxPrice, String sortBy, String sortDir);
     RoomDTO updateRoomAvailability(Long id, boolean isAvailable);
+    CountDTO getRoomCountsByType();
 } 

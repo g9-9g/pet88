@@ -34,4 +34,24 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     boolean existsOverlappingBooking(@Param("roomId") Long roomId,
                                    @Param("startTime") LocalDateTime startTime,
                                    @Param("endTime") LocalDateTime endTime);
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.ownerId = :ownerId")
+    Long countByOwnerId(@Param("ownerId") Long ownerId);
+    
+    @Query("SELECT b.status as status, COUNT(b) as count FROM Booking b " +
+           "WHERE b.ownerId = :ownerId GROUP BY b.status")
+    List<Object[]> countByStatusAndOwnerId(@Param("ownerId") Long ownerId);
+
+    @Query("SELECT b.status as status, COUNT(b) as count FROM Booking b " +
+           "GROUP BY b.status")
+    List<Object[]> countByStatusAll();
+
+    @Query("SELECT COUNT(b) > 0 FROM Booking b WHERE " +
+           "b.room.id = :roomId AND " +
+           "((b.checkInTime <= :checkOutTime AND b.checkOutTime >= :checkInTime))")
+    boolean hasOverlappingBooking(
+        @Param("roomId") Long roomId,
+        @Param("checkInTime") LocalDateTime checkInTime,
+        @Param("checkOutTime") LocalDateTime checkOutTime
+    );
 } 

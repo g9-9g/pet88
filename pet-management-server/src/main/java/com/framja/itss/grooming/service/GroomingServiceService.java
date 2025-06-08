@@ -30,4 +30,6 @@ public interface GroomingServiceService {
             String sortDir,
             int page,
             int size);
+            
+    Long getServiceCountsAll();
 } 

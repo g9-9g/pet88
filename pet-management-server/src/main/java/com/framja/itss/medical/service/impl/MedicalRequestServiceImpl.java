@@ -1,7 +1,9 @@
 package com.framja.itss.medical.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import com.framja.itss.pets.entity.Pet;
 import com.framja.itss.pets.repository.PetRepository;
 import com.framja.itss.users.entity.User;
 import com.framja.itss.users.repository.UserRepository;
+import com.framja.itss.common.dto.CountDTO;
 
 @Service
 public class MedicalRequestServiceImpl implements MedicalRequestService {
@@ -273,6 +276,48 @@ public class MedicalRequestServiceImpl implements MedicalRequestService {
         
         MedicalRequest updatedRequest = requestRepository.save(request);
         return convertToDto(updatedRequest);
+    }
+    
+    @Override
+    public CountDTO getRequestCountsByOwnerId(Long ownerId) {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = requestRepository.countByStatusAndOwnerId(ownerId);
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((MedicalRequestStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
+    }
+
+    @Override
+    public CountDTO getRequestCountsAll() {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get status counts
+        List<Object[]> statusCounts = requestRepository.countByStatusAll();
+        Map<String, Long> statusCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] statusCount : statusCounts) {
+            String status = ((MedicalRequestStatus) statusCount[0]).name();
+            Long count = (Long) statusCount[1];
+            statusCountMap.put(status, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(statusCountMap);
+        return countDTO;
     }
     
     private MedicalRequestDto convertToDto(MedicalRequest request) {

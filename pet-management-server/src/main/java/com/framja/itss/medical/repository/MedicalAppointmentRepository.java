@@ -23,4 +23,24 @@ public interface MedicalAppointmentRepository extends JpaRepository<MedicalAppoi
     List<MedicalAppointment> findByStatus(AppointmentStatus status);
     
     List<MedicalAppointment> findByStatusIn(List<AppointmentStatus> statuses);
+
+    List<MedicalAppointment> findByPetOwnerId(Long ownerId);
+    
+    @Query("SELECT COUNT(a) FROM MedicalAppointment a WHERE a.pet.owner.id = :ownerId")
+    Long countByPetOwnerId(@Param("ownerId") Long ownerId);
+    
+    @Query("SELECT a.status as status, COUNT(a) as count FROM MedicalAppointment a " +
+           "WHERE a.pet.owner.id = :ownerId GROUP BY a.status")
+    List<Object[]> countByStatusAndPetOwnerId(@Param("ownerId") Long ownerId);
+
+    @Query("SELECT COUNT(a) FROM MedicalAppointment a WHERE a.doctor.id = :doctorId")
+    Long countByDoctorId(@Param("doctorId") Long doctorId);
+    
+    @Query("SELECT a.status as status, COUNT(a) as count FROM MedicalAppointment a " +
+           "WHERE a.doctor.id = :doctorId GROUP BY a.status")
+    List<Object[]> countByStatusAndDoctorId(@Param("doctorId") Long doctorId);
+
+    @Query("SELECT a.status as status, COUNT(a) as count FROM MedicalAppointment a " +
+           "GROUP BY a.status")
+    List<Object[]> countByStatusAll();
 } 

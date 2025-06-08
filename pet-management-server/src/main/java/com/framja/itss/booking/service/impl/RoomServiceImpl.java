@@ -3,12 +3,16 @@ package com.framja.itss.booking.service.impl;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.framja.itss.common.dto.CountDTO;
 import com.framja.itss.booking.dto.RoomDTO;
 import com.framja.itss.booking.dto.RoomRequest;
 import com.framja.itss.booking.entity.Booking;
@@ -159,6 +163,28 @@ public class RoomServiceImpl implements RoomService {
         room.setAvailable(isAvailable);
         Room updatedRoom = roomRepository.save(room);
         return convertToDTO(updatedRoom);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CountDTO getRoomCountsByType() {
+        CountDTO countDTO = new CountDTO();
+        
+        // Get type counts
+        List<Object[]> typeCounts = roomRepository.countByType();
+        Map<String, Long> typeCountMap = new HashMap<>();
+        
+        Long total = 0L;
+        for (Object[] typeCount : typeCounts) {
+            String type = ((RoomType) typeCount[0]).name();
+            Long count = (Long) typeCount[1];
+            typeCountMap.put(type, count);
+            total += count;
+        }
+        
+        countDTO.setTotal(total);
+        countDTO.setStatusCounts(typeCountMap);
+        return countDTO;
     }
 
     private RoomDTO convertToDTO(Room room) {

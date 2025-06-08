@@ -22,4 +22,7 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
                                  @Param("endTime") LocalDateTime endTime);
 
     List<Room> findByIsAvailableTrue();
+
+    @Query("SELECT r.type as type, COUNT(r) as count FROM Room r GROUP BY r.type")
+    List<Object[]> countByType();
 } 
