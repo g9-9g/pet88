@@ -35,7 +35,7 @@ public class NotificationController {
     }
 
     @GetMapping("/owned")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_STAFF', 'ROLE_PET_OWNER', 'ROLE_VET')")
     public ResponseEntity<List<NotificationDTO>> getOwnedNotifications(
             @AuthenticationPrincipal User user,
             @RequestParam(required = false) NotificationStatus status) {

@@ -18,6 +18,11 @@
   --color-light-400: #f2f4f8;
   --color-dark-100: #04050c;
   --color-dark-200: #131524;
+  --color-chart-1: #ff7474;
+  --color-chart-2: #3dd9b3;
+  --color-chart-3: #56b8ff;
+  --color-chart-4: #eea8fd;
+  --color-chart-5: #f9ab72;
 
   --animate-caret-blink: caret-blink 1.25s ease-out infinite;
 
