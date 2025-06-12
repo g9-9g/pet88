@@ -16,12 +16,25 @@ interface PetCardProps {
   pet: Pet;
   onUpdate?: () => void;
   onDeleteClick: (pet: Pet) => void;
+  imageIndex?: number;
 }
 
-export const PetCard = ({ pet, onUpdate, onDeleteClick }: PetCardProps) => {
+export const PetCard = ({
+  pet,
+  onUpdate,
+  onDeleteClick,
+  imageIndex = 0,
+}: PetCardProps) => {
   const [showDetail, setShowDetail] = useState(false);
   const [initialEdit, setInitialEdit] = useState(false);
-  const imageUrl = "/assets/images/default-pet.jpg";
+  const defaultImages = [
+    "/assets/images/default-pet.jpg",
+    "/assets/images/default-pet-2.jpg",
+    "/assets/images/default-pet-3.jpg",
+    "/assets/images/default-pet-4.jpg",
+    "/assets/images/default-pet-5.jpg",
+  ];
+  const imageUrl = defaultImages[imageIndex % defaultImages.length];
 
   const handleShowDetail = (editMode = false) => {
     setInitialEdit(editMode);
@@ -114,6 +127,7 @@ export const PetCard = ({ pet, onUpdate, onDeleteClick }: PetCardProps) => {
         onUpdate={onUpdate}
         onDeleteClick={onDeleteClick}
         initialEdit={initialEdit}
+        imageUrl={imageUrl}
       />
     </>
   );

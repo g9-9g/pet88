@@ -47,12 +47,13 @@ const PetsPage = () => {
       {error && <div className="text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {pets.map((pet) => (
+        {pets.map((pet, idx) => (
           <PetCard
             key={pet.petId}
             pet={pet}
             onUpdate={handleSuccess}
             onDeleteClick={handleDeleteClick}
+            imageIndex={idx}
           />
         ))}
       </div>
@@ -63,6 +64,17 @@ const PetsPage = () => {
           open={!!petToDelete}
           onOpenChange={(open) => !open && setPetToDelete(null)}
           onConfirm={handleDeleteConfirm}
+          imageUrl={(() => {
+            const idx = pets.findIndex((p) => p.petId === petToDelete.petId);
+            const defaultImages = [
+              "/assets/images/default-pet.jpg",
+              "/assets/images/default-pet-2.jpg",
+              "/assets/images/default-pet-3.jpg",
+              "/assets/images/default-pet-4.jpg",
+              "/assets/images/default-pet-5.jpg",
+            ];
+            return defaultImages[idx % defaultImages.length];
+          })()}
         />
       )}
     </div>

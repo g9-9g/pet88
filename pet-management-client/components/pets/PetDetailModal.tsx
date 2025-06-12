@@ -26,6 +26,7 @@ interface PetDetailModalProps {
   onUpdate?: (updatedPet: Pet) => void;
   onDeleteClick: (pet: Pet) => void;
   initialEdit?: boolean;
+  imageUrl?: string;
 }
 
 export const PetDetailModal = ({
@@ -35,6 +36,7 @@ export const PetDetailModal = ({
   onUpdate,
   onDeleteClick,
   initialEdit = false,
+  imageUrl,
 }: PetDetailModalProps) => {
   const [isEditing, setIsEditing] = useState(initialEdit);
   const [editedPet, setEditedPet] = useState<Pet>(pet);
@@ -45,8 +47,6 @@ export const PetDetailModal = ({
     setEditedPet(pet);
     setIsEditing(initialEdit);
   }, [pet, open, initialEdit]);
-
-  const imageUrl = "/assets/images/default-pet.jpg";
 
   const handleUpdate = async () => {
     try {
@@ -101,7 +101,7 @@ export const PetDetailModal = ({
         >
           <div className="size-52 rounded-2xl overflow-hidden bg-light-300 shadow-lg border-4 border-light-300 flex items-center justify-center relative cursor-pointer">
             <Image
-              src={imageUrl}
+              src={imageUrl || "/assets/images/default-pet.jpg"}
               alt={pet.name}
               width={200}
               height={200}

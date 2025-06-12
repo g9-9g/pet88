@@ -1,51 +1,181 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import { useEffect } from "react";
 import { useUser } from "@/context/UserContext";
+import { useReports } from "@/hooks/use-reports";
+import { StatisticChart } from "@/components/dashboard/StatisticChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  MdArrowForward,
+  MdMedicalServices,
+  MdEvent,
+  MdContentCut,
+  MdHotel,
+  MdPets,
+} from "react-icons/md";
 import { useRouter } from "next/navigation";
 
+const chartColors = [
+  "#3dd9b3", // chart-1
+  "#56b8ff", // chart-2
+  "#ff7474", // chart-3
+  "#eea8fd", // chart-4
+  "#f9ab72", // chart-5
+];
+
 const OwnerDashboardPage = () => {
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
+  const { ownerReport, loading, error, fetchOwnerReports } = useReports();
   const router = useRouter();
 
-  if (isLoading) {
-    return <div>Loading dashboard...</div>;
-  }
+  useEffect(() => {
+    if (user?.id) {
+      fetchOwnerReports(user.id);
+    }
+  }, [user?.id, fetchOwnerReports]);
 
-  // If no user or user is not an owner, redirect them
-  // (e.g., to login or a generic dashboard)
-  // This check might also be handled by middleware for the route group
-  if (!user || user.role !== "ROLE_PET_OWNER") {
-    // In a real app, you might redirect to login or a generic error/dashboard page
-    // For now, let's assume middleware would handle unauthorized access to this page,
-    // or redirect to a more generic dashboard if the role is wrong.
-    // router.push("/dashboard");
-    return (
-      <div>
-        Access denied or incorrect role for this dashboard. (Owner Dashboard)
-      </div>
-    );
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!ownerReport) return null;
+
+  const medicalRequestData = Object.entries(
+    ownerReport.medicalRequestCount.statusCounts
+  ).map(([status, count], idx) => ({
+    name: status,
+    value: count,
+    fill: chartColors[idx % chartColors.length],
+  }));
+
+  const appointmentData = Object.entries(
+    ownerReport.appointmentCount.statusCounts
+  ).map(([status, count], idx) => ({
+    name: status,
+    value: count,
+    fill: chartColors[idx % chartColors.length],
+  }));
+
+  const groomingData = Object.entries(
+    ownerReport.groomingRequestCount.statusCounts
+  ).map(([status, count], idx) => ({
+    name: status,
+    value: count,
+    fill: chartColors[idx % chartColors.length],
+  }));
+
+  const bookingData = Object.entries(ownerReport.booking.statusCounts).map(
+    ([status, count], idx) => ({
+      name: status,
+      value: count,
+      fill: chartColors[idx % chartColors.length],
+    })
+  );
 
   return (
-    <div>
-      <h1>Welcome to your Owner Dashboard, {user.name}!</h1>
-      <p>Here you can manage your pets and appointments.</p>
+    <div className="container mx-auto py-6 space-y-6">
+      <h1 className="text-3xl font-bold">Owner Dashboard</h1>
 
-      <h2>Quick Links:</h2>
-      <ul>
-        <li>
-          <Link href="/dashboard/pets">My Pets</Link>
-        </li>
-        <li>
-          <Link href="/dashboard/appointments">My Appointments</Link>
-        </li>
-        {/* Add other owner-specific links here */}
-      </ul>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <div className="flex items-center gap-2">
+                <MdPets className="text-xl" />
+                Total Pets
+                <button
+                  className="ml-2 p-1 rounded-full hover:bg-black/10"
+                  onClick={() => router.push("/dashboard/pets")}
+                  title="Go to Pets"
+                  type="button"
+                >
+                  <MdArrowForward />
+                </button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{ownerReport.petCount}</p>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* You can add owner-specific summary components here */}
-      {/* e.g., <UpcomingAppointmentsSummary />, <MyPetsOverview /> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <StatisticChart
+          title={
+            <div className="flex items-center gap-2">
+              <MdMedicalServices className="text-xl" />
+              Medical Requests
+              <button
+                className="ml-2 p-1 rounded-full hover:bg-black/10"
+                onClick={() => router.push("/dashboard/requests")}
+                title="Go to Medical Requests"
+                type="button"
+              >
+                <MdArrowForward />
+              </button>
+            </div>
+          }
+          data={medicalRequestData}
+          total={ownerReport.medicalRequestCount.total}
+          description="Status distribution of medical requests"
+        />
+        <StatisticChart
+          title={
+            <div className="flex items-center gap-2">
+              <MdEvent className="text-xl" />
+              Appointments
+              <button
+                className="ml-2 p-1 rounded-full hover:bg-black/10"
+                onClick={() => router.push("/dashboard/appointments")}
+                title="Go to Appointments"
+                type="button"
+              >
+                <MdArrowForward />
+              </button>
+            </div>
+          }
+          data={appointmentData}
+          total={ownerReport.appointmentCount.total}
+          description="Status distribution of appointments"
+        />
+        <StatisticChart
+          title={
+            <div className="flex items-center gap-2">
+              <MdContentCut className="text-xl" />
+              Grooming Requests
+              <button
+                className="ml-2 p-1 rounded-full hover:bg-black/10"
+                onClick={() => router.push("/dashboard/services")}
+                title="Go to Grooming Requests"
+                type="button"
+              >
+                <MdArrowForward />
+              </button>
+            </div>
+          }
+          data={groomingData}
+          total={ownerReport.groomingRequestCount.total}
+          description="Status distribution of grooming requests"
+        />
+        <StatisticChart
+          title={
+            <div className="flex items-center gap-2">
+              <MdHotel className="text-xl" />
+              Bookings
+              <button
+                className="ml-2 p-1 rounded-full hover:bg-black/10"
+                onClick={() => router.push("/dashboard/hotel")}
+                title="Go to Bookings"
+                type="button"
+              >
+                <MdArrowForward />
+              </button>
+            </div>
+          }
+          data={bookingData}
+          total={ownerReport.booking.total}
+          description="Status distribution of room bookings"
+        />
+      </div>
     </div>
   );
 };

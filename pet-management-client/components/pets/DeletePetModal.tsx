@@ -18,6 +18,7 @@ interface DeletePetModalProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   pet: Pet;
+  imageUrl?: string;
 }
 
 export const DeletePetModal = ({
@@ -25,8 +26,9 @@ export const DeletePetModal = ({
   onOpenChange,
   onConfirm,
   pet,
+  imageUrl,
 }: DeletePetModalProps) => {
-  const imageUrl = "/assets/images/default-pet.jpg";
+  // const imageUrl = "/assets/images/default-pet.jpg";
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -36,7 +38,7 @@ export const DeletePetModal = ({
           <div className="flex items-center gap-4 my-4">
             <div className="relative size-16 rounded-xl overflow-hidden bg-light-300">
               <Image
-                src={imageUrl}
+                src={imageUrl || "/assets/images/default-pet.jpg"}
                 alt={pet.name}
                 fill
                 className="object-cover"
