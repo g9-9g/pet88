@@ -13,10 +13,10 @@ export default function Home() {
           Treating Your Pet By Our Professionals.
         </h2>
         <p className="md:text-base text-sm font-semibold text-gray-400 mt-5">
-          {" "}
-          NIHAHAHAHA 😆 NIHAHAHAHA 😆 NIHAHAHAHA 😆 NIHAHAHAHA 😆 NIHAHAHAHA 😆
-          UWAAAAH 😭😭😭 UWAAAAH 😭😭😭 UWAAAAH 😭😭😭gomen gomen nihahaha
-          nihahaha ❗❗❗🔟😤 uogh uogh uogh
+          Our pet management system helps you keep track of your pets' health,
+          appointments, and care schedules. With easy scheduling, detailed pet
+          profiles, and professional veterinary services, we ensure your pets
+          receive the best care possible.
         </p>
         <div className="mt-10 flex justify-center items-center gap-5">
           <Link href="/dashboard/requests">
