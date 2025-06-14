@@ -1,64 +1,99 @@
-# Pet Management API
+# 💻 Hướng dẫn cài đặt phần mềm  
+**Nhóm 27 – Hệ thống quản lý trung tâm chăm sóc thú cưng**
 
-This is a Spring Boot application for pet management with REST API endpoints.
+📌 **Chi tiết về chương trình tại:** *https://github.com/g9-9g/pet88*
 
-## API Documentation
+---
 
-This project uses Spring REST Docs to generate API documentation. The documentation is automatically generated during the build process.
+## 🧩 Hướng dẫn sử dụng
 
-### Generating API Documentation
+### 🔹 Bước 1: Cài đặt yêu cầu hệ thống
 
-To generate the API documentation, run:
+- Cài đặt [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- Cài đặt [Node.js](https://nodejs.org/en)
 
+Kiểm tra phiên bản:
 ```bash
-mvn clean package
+node -v
+npm -v
+docker -v
 ```
 
-This will:
-1. Run the tests that generate API documentation snippets
-2. Process the AsciiDoc files that include these snippets
-3. Generate HTML documentation
-4. Include the documentation in the built JAR file
+---
 
-### Accessing the Documentation
+### 🔹 Bước 2: Khởi chạy hệ thống
 
-Once the application is running, the API documentation is available at:
+#### 📦 **Backend (API + MongoDB qua Docker)**
 
-```
-http://localhost:8080/api/docs
-```
-
-This URL redirects to the full documentation page.
-
-### Documentation Structure
-
-The API documentation includes:
-
-- Authentication endpoints
-- Pet management endpoints
-- Request and response formats
-- Authentication requirements
-- Error handling information
-
-### Extending the Documentation
-
-To document new endpoints:
-
-1. Create test classes that use Spring REST Docs annotations
-2. Run the tests to generate snippets
-3. Update the AsciiDoc files to include the new snippets
-4. Rebuild the application
-
-## Development
-
-### Running the Application
-
+1. Mở terminal, chuyển đến thư mục backend:
 ```bash
-mvn spring-boot:run
+cd ./pet-management-server/
 ```
 
-### Running Tests
-
+2. Khởi chạy Docker:
 ```bash
-mvn test
-``` 
+docker-compose up --build
+```
+
+> ✅ Hệ thống backend sẽ chạy tại: `http://localhost:8080`
+
+---
+
+#### 🎨 **Frontend (Next.js)**
+
+1. Mở terminal khác, chuyển đến thư mục frontend:
+```bash
+cd ./pet-management-client/
+```
+
+2. Tạo file cấu hình môi trường:
+```bash
+touch .env.local
+```
+
+3. Thêm dòng sau vào `.env.local` để cấu hình API endpoint:
+```
+NEXT_PUBLIC_API_ENDPOINT=http://localhost:8080
+```
+
+4. Cài đặt dependencies:
+```bash
+npm install
+```
+
+5. Build và chạy ứng dụng:
+```bash
+npm run build
+npm run start
+```
+
+> ✅ Giao diện frontend sẽ chạy tại: `http://localhost:3000`
+
+---
+
+## 🔐 Danh sách tài khoản đăng nhập hệ thống
+
+| Vai trò            | Username    | Password   |
+|--------------------|-------------|------------|
+| Chủ nuôi           | owner69     | 12345678   |
+| Bác sĩ thú y       | vet69       | 12345678   |
+| Nhân viên trung tâm| staff69     | 12345678   |
+| Quản trị viên      | admin69     | 12345678   |
+
+---
+
+## 🛑 Để dừng hệ thống
+
+- Dừng Docker:
+```bash
+Ctrl + C trong terminal đang chạy docker
+```
+Hoặc:
+```bash
+docker-compose down
+```
+
+- Dừng frontend:
+```bash
+Ctrl + C trong terminal đang chạy `npm run start`
+```
