@@ -1,0 +1,126 @@
+@startuml
+
+package "dto" {
+    class PetDto <<dto>> {
+        - petId: Long
+        - ownerId: Long
+        - name: String
+        - species: String
+        - breed: String
+        - gender: String
+        - birthdate: LocalDate
+        - color: String
+        - avatarUrl: String
+        - healthNotes: String
+        - vaccinationHistory: String
+        - nutritionNotes: String
+        - createdAt: LocalDateTime
+        - updatedAt: LocalDateTime
+    }
+}
+
+package "entity" {
+    class Pet <<entity>> {
+        - petId: Long
+        - name: String
+        - species: String
+        - breed: String
+        - gender: String
+        - birthdate: LocalDate
+        - color: String
+        - avatarUrl: String
+        - healthNotes: String
+        - vaccinationHistory: String
+        - nutritionNotes: String
+        - createdAt: LocalDateTime
+        - updatedAt: LocalDateTime
+    }
+}
+
+package "controller" {
+    class PetController <<controller>> {
+        - petService: PetService
+        + createPet(petDto: PetDto, user: User): ResponseEntity<PetDto>
+        + getPetById(id: Long): ResponseEntity<PetDto>
+        + getAllPets(): ResponseEntity<List<PetDto>>
+        + getPetsByOwner(user: User): ResponseEntity<List<PetDto>>
+        + updatePet(id: Long, petDto: PetDto): ResponseEntity<PetDto>
+        + deletePet(id: Long): ResponseEntity<Void>
+        + searchPets(...): ResponseEntity<?>
+        + getPetsWithCompletedAppointments(ownerId: Long): ResponseEntity<List<PetDto>>
+        + getPetsCountByOwner(user: User): ResponseEntity<Long>
+        + getTotalPetsCount(): ResponseEntity<Long>
+        + getFilteredPetsCount(...): ResponseEntity<Long>
+    }
+}
+
+package "service" {
+    interface PetService {
+        + createPet(petDto: PetDto): PetDto
+        + getPetById(petId: Long): Optional<PetDto>
+        + getAllPets(): List<PetDto>
+        + getPetsByOwnerId(ownerId: Long): List<PetDto>
+        + updatePet(petId: Long, petDto: PetDto): PetDto
+        + deletePet(petId: Long): void
+        + convertToDto(pet: Pet): PetDto
+        + convertToEntity(petDto: PetDto, ownerId: Long): Pet
+        + getFilteredPets(...): List<PetDto>
+        + getFilteredPetsWithPagination(...): Page<PetDto>
+        + getPetsWithCompletedAppointments(ownerId: Long): List<PetDto>
+        + getPetsCountByOwnerId(ownerId: Long): Long
+        + getTotalPetsCount(): Long
+        + getFilteredPetsCount(...): Long
+    }
+
+    class PetServiceImpl <<service>> {
+        - petRepository: PetRepository
+        + createPet(petDto: PetDto): PetDto
+        + getPetById(petId: Long): Optional<PetDto>
+        + getAllPets(): List<PetDto>
+        + getPetsByOwnerId(ownerId: Long): List<PetDto>
+        + updatePet(petId: Long, petDto: PetDto): PetDto
+        + deletePet(petId: Long): void
+        + convertToDto(pet: Pet): PetDto
+        + convertToEntity(petDto: PetDto, ownerId: Long): Pet
+        + getFilteredPets(...): List<PetDto>
+        + getFilteredPetsWithPagination(...): Page<PetDto>
+        + getPetsWithCompletedAppointments(ownerId: Long): List<PetDto>
+        + getPetsCountByOwnerId(ownerId: Long): Long
+        + getTotalPetsCount(): Long
+        + getFilteredPetsCount(...): Long
+    }
+    
+    class PetAuthorizationService <<service>> {
+        - petService: PetService
+        + isOwner(petId: Long, userId: Long): boolean
+    }
+}
+
+package "repository" {
+    interface PetRepository extends JpaRepository<Pet, Long> {
+        + findByOwner_Id(ownerId: Long): List<Pet>
+        + findByNameContaining(name: String): List<Pet>
+        + findPetsWithFiltersAndSort(...): List<Pet>
+        + findPetsWithFiltersAndPagination(...): Page<Pet>
+        + findPetsWithFiltersAndSortNative(...): List<Pet>
+        + findPetsWithCompletedAppointments(ownerId: Long): List<Pet>
+        + countByOwner_Id(ownerId: Long): Long
+        + countPetsWithFilters(...): Long
+    }
+}
+
+
+' Relationships
+PetController --> PetService
+PetController ..> PetDto
+
+PetServiceImpl .up.|> PetService
+PetServiceImpl --> PetRepository
+PetServiceImpl ..> PetDto
+PetServiceImpl ..> Pet
+
+PetAuthorizationService --> PetService
+
+PetRepository ..> Pet
+
+@enduml 

@@ -1,0 +1,72 @@
+@startuml
+' Users Module Class Diagram
+
+package "dto" {
+    class UserDto <<dto>> {
+        - id: Long
+        - username: String
+        - email: String
+        - fullName: String
+        - role: String
+    }
+    class UserSummaryDto <<dto>> {
+        - id: Long
+        - username: String
+        - fullName: String
+    }
+    class ChangePasswordRequest <<dto>> {
+        - oldPassword: String
+        - newPassword: String
+    }
+}
+
+package "entity" {
+    class User <<entity>> {
+        - id: Long
+        - username: String
+        - password: String
+        - email: String
+        - fullName: String
+        - role: RoleName
+    }
+}
+
+package "controller" {
+    class UserController <<controller>> {
+        + getAllUsers(): ResponseEntity<List<UserDto>>
+        + getUserById(id: Long): ResponseEntity<UserDto>
+        + getCurrentUser(user: User): ResponseEntity<UserDto>
+        + updateUser(id: Long, userDto: UserDto, currentUser: User): ResponseEntity<UserDto>
+        + deleteUser(id: Long): ResponseEntity<Void>
+        + changePassword(request: ChangePasswordRequest, user: User): ResponseEntity<Void>
+    }
+}
+
+package "service" {
+    interface UserService {
+        + findAll(): List<UserDto>
+        + findById(id: Long): Optional<UserDto>
+        + findByUsername(username: String): Optional<UserDto>
+        + getCurrentUser(user: User): UserDto
+        + updateUser(id: Long, userDto: UserDto, currentUser: User): UserDto
+        + deleteUser(id: Long): void
+        + changePassword(oldPassword: String, newPassword: String, user: User): void
+    }
+    class UserServiceImpl <<service>>
+}
+
+package "repository" {
+    interface UserRepository
+}
+
+' Relationships
+UserController --> UserService
+UserServiceImpl .up.|> UserService
+UserServiceImpl --> UserRepository
+UserServiceImpl ..> User
+UserController ..> UserDto
+UserController ..> ChangePasswordRequest
+
+UserRepository ..> User
+
+@enduml 

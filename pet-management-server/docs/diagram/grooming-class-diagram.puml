@@ -1,0 +1,115 @@
+@startuml
+' Grooming Module Class Diagram
+
+package "dto" {
+    class GroomingRequestDto <<dto>> {
+        - id: Long
+        - ownerId: Long
+        - petId: Long
+        - serviceId: Long
+        - staffId: Long
+        - requestedDateTime: LocalDateTime
+        - status: GroomingRequestStatus
+        - notes: String
+        - price: Double
+    }
+
+    class GroomingServiceDto <<dto>> {
+        - id: Long
+        - name: String
+        - description: String
+        - price: Double
+        - isActive: boolean
+    }
+}
+
+package "entity" {
+    class GroomingRequest <<entity>> {
+        - id: Long
+        - requestedDateTime: LocalDateTime
+        - status: GroomingRequestStatus
+        - notes: String
+        - price: Double
+    }
+
+    class GroomingService <<entity>> {
+        - id: Long
+        - name: String
+        - description: String
+        - price: Double
+        - isActive: boolean
+    }
+}
+
+package "controller" {
+    class GroomingRequestController <<controller>> {
+        + createGroomingRequest(createRequest: CreateRequest, user: User): ResponseEntity<GroomingRequestDto>
+        + getGroomingRequestById(id: Long): ResponseEntity<GroomingRequestDto>
+        + getAllGroomingRequests(): ResponseEntity<List<GroomingRequestDto>>
+        + getMyGroomingRequests(user: User): ResponseEntity<List<GroomingRequestDto>>
+        + getGroomingRequestsByPetId(petId: Long): ResponseEntity<List<GroomingRequestDto>>
+        + getGroomingRequestsByStatus(status: GroomingRequestStatus): ResponseEntity<List<GroomingRequestDto>>
+        + updateGroomingRequestStatus(id: Long, updateRequest: UpdateRequest, user: User): ResponseEntity<GroomingRequestDto>
+        + deleteGroomingRequest(id: Long): ResponseEntity<Void>
+        + searchGroomingRequests(...): ResponseEntity<?>
+    }
+
+    class GroomingServiceController <<controller>> {
+        + createGroomingService(serviceDto: GroomingServiceDto): ResponseEntity<GroomingServiceDto>
+        + getGroomingServiceById(id: Long): ResponseEntity<GroomingServiceDto>
+        + getAllGroomingServices(): ResponseEntity<List<GroomingServiceDto>>
+        + getActiveGroomingServices(): ResponseEntity<List<GroomingServiceDto>>
+        + updateGroomingService(id: Long, serviceDto: GroomingServiceDto): ResponseEntity<GroomingServiceDto>
+        + deleteGroomingService(id: Long): ResponseEntity<Void>
+        + searchGroomingServices(...): ResponseEntity<?>
+    }
+}
+
+package "service" {
+    interface GroomingRequestService {
+        + createRequest(createRequest: CreateRequest, ownerId: Long): GroomingRequestDto
+        + getRequestById(id: Long): Optional<GroomingRequestDto>
+        + getAllRequests(): List<GroomingRequestDto>
+        + getRequestsByOwnerId(ownerId: Long): List<GroomingRequestDto>
+        + getRequestsByPetId(petId: Long): List<GroomingRequestDto>
+        + getRequestsByStatus(status: GroomingRequestStatus): List<GroomingRequestDto>
+        + updateRequestStatus(id: Long, updateRequest: UpdateRequest, userId: Long): GroomingRequestDto
+        + deleteRequest(id: Long): void
+        + getFilteredRequestsWithPagination(...): Page<GroomingRequestDto>
+    }
+
+    interface GroomingServiceService {
+        + createService(serviceDto: GroomingServiceDto): GroomingServiceDto
+        + getServiceById(id: Long): Optional<GroomingServiceDto>
+        + getAllServices(): List<GroomingServiceDto>
+        + getActiveServices(): List<GroomingServiceDto>
+        + updateService(id: Long, serviceDto: GroomingServiceDto): GroomingServiceDto
+        + deleteService(id: Long): void
+        + getFilteredServicesWithPagination(...): Page<GroomingServiceDto>
+    }
+
+    class GroomingRequestServiceImpl <<service>>
+    class GroomingServiceServiceImpl <<service>>
+}
+
+package "repository" {
+    interface GroomingRequestRepository
+    interface GroomingServiceRepository
+}
+
+' Relationships
+GroomingRequestController --> GroomingRequestService
+GroomingRequestServiceImpl .up.|> GroomingRequestService
+GroomingRequestServiceImpl --> GroomingRequestRepository
+GroomingRequestServiceImpl ..> GroomingRequest
+GroomingRequestController ..> GroomingRequestDto
+
+GroomingServiceController --> GroomingServiceService
+GroomingServiceServiceImpl .up.|> GroomingServiceService
+GroomingServiceServiceImpl --> GroomingServiceRepository
+GroomingServiceServiceImpl ..> GroomingService
+GroomingServiceController ..> GroomingServiceDto
+
+GroomingRequest ..> GroomingService
+
+@enduml 

@@ -1,0 +1,134 @@
+@startuml
+' Booking Module Class Diagram
+
+package "dto" {
+    class BookingDTO <<dto>> {
+        - id: Long
+        - petId: Long
+        - roomId: Long
+        - checkInDate: LocalDate
+        - checkOutDate: LocalDate
+        - status: String
+        - totalFee: Double
+    }
+    class RoomDTO <<dto>> {
+        - id: Long
+        - roomNumber: String
+        - type: String
+        - pricePerNight: Double
+        - isAvailable: boolean
+    }
+    class RoomRequest <<dto>> {
+        - roomNumber: String
+        - type: String
+        - pricePerNight: Double
+    }
+    class AvailabilityRequest <<dto>> {
+        - checkInDate: LocalDate
+        - checkOutDate: LocalDate
+    }
+}
+
+package "entity" {
+    class Booking <<entity>> {
+        - id: Long
+        - checkInDate: LocalDate
+        - checkOutDate: LocalDate
+        - status: BookingStatus
+        - totalFee: Double
+    }
+    class Room <<entity>> {
+        - id: Long
+        - roomNumber: String
+        - type: RoomType
+        - pricePerNight: Double
+    }
+    enum BookingStatus {
+        PENDING
+        CONFIRMED
+        CHECKED_IN
+        CHECKED_OUT
+        CANCELLED
+    }
+    enum RoomType {
+        STANDARD
+        DELUXE
+        SUITE
+    }
+}
+
+package "controller" {
+    class BookingController <<controller>> {
+        + createBooking(bookingDTO: BookingDTO, user: User): ResponseEntity<BookingDTO>
+        + getBookingById(id: Long): ResponseEntity<BookingDTO>
+        + getBookingsByPet(petId: Long): ResponseEntity<List<BookingDTO>>
+        + getBookingsForOwner(user: User): ResponseEntity<List<BookingDTO>>
+        + updateBookingStatus(id: Long, status: String, user: User): ResponseEntity<BookingDTO>
+        + cancelBooking(id: Long, user: User): ResponseEntity<Void>
+        + getBookingHistory(user: User): ResponseEntity<List<BookingDTO>>
+    }
+    class RoomController <<controller>> {
+        + addRoom(roomRequest: RoomRequest): ResponseEntity<RoomDTO>
+        + getRoomById(id: Long): ResponseEntity<RoomDTO>
+        + getAllRooms(): ResponseEntity<List<RoomDTO>>
+        + updateRoom(id: Long, roomRequest: RoomRequest): ResponseEntity<RoomDTO>
+        + deleteRoom(id: Long): ResponseEntity<Void>
+        + findAvailableRooms(request: AvailabilityRequest): ResponseEntity<List<RoomDTO>>
+    }
+}
+
+package "service" {
+    interface BookingService {
+        + createBooking(bookingDTO: BookingDTO, ownerId: Long): BookingDTO
+        + getBookingById(bookingId: Long): Optional<BookingDTO>
+        + getBookingsByPetId(petId: Long): List<BookingDTO>
+        + getBookingsByOwnerId(ownerId: Long): List<BookingDTO>
+        + updateBookingStatus(bookingId: Long, status: String, userId: Long): BookingDTO
+        + cancelBooking(bookingId: Long, userId: Long): void
+    }
+    interface RoomService {
+        + addRoom(roomRequest: RoomRequest): RoomDTO
+        + getRoomById(roomId: Long): Optional<RoomDTO>
+        + getAllRooms(): List<RoomDTO>
+        + updateRoom(roomId: Long, roomRequest: RoomRequest): RoomDTO
+        + deleteRoom(roomId: Long): void
+        + findAvailableRooms(checkIn: LocalDate, checkOut: LocalDate): List<RoomDTO>
+    }
+    class BookingServiceImpl <<service>>
+    class RoomServiceImpl <<service>>
+}
+
+package "repository" {
+    interface BookingRepository
+    interface RoomRepository
+}
+
+package "util" {
+    class BookingFeeCalculator {
+        + calculateTotalFee(pricePerNight: Double, checkIn: LocalDate, checkOut: LocalDate): Double
+    }
+}
+
+' Relationships
+BookingController --> BookingService
+BookingServiceImpl .up.|> BookingService
+BookingServiceImpl --> BookingRepository
+BookingServiceImpl ..> Booking
+BookingServiceImpl --> RoomRepository
+BookingServiceImpl ..> Room
+BookingServiceImpl ..> BookingFeeCalculator
+BookingController ..> BookingDTO
+
+RoomController --> RoomService
+RoomServiceImpl .up.|> RoomService
+RoomServiceImpl --> RoomRepository
+RoomServiceImpl ..> Room
+RoomController ..> RoomDTO
+RoomController ..> RoomRequest
+RoomController ..> AvailabilityRequest
+
+Booking ..> Room
+Booking o-- BookingStatus
+Room o-- RoomType
+
+@enduml 

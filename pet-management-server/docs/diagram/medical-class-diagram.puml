@@ -1,0 +1,180 @@
+@startuml
+' Medical Module Class Diagram
+
+package "dto" {
+    package "appointment" {
+        class CreateAppointmentDto <<dto>> {
+            - requestId: Long
+            - appointmentTime: LocalDateTime
+            - notes: String
+        }
+        class MedicalAppointmentDetailDto <<dto>> {
+            - appointment: MedicalAppointmentDto
+            - prescriptions: List<PrescriptionDto>
+        }
+        class MedicalAppointmentDto <<dto>> {
+            - id: Long
+            - petId: Long
+            - petName: String
+            - ownerId: Long
+            - ownerName: String
+            - doctorId: Long
+            - doctorName: String
+            - appointmentTime: LocalDateTime
+            - notes: String
+            - status: AppointmentStatus
+        }
+        class UpdateAppointmentDto <<dto>> {
+            - appointmentTime: LocalDateTime
+            - notes: String
+            - status: AppointmentStatus
+        }
+    }
+
+    package "medicine" {
+        class MedicineDto <<dto>> {
+            - id: Long
+            - name: String
+            - description: String
+            - stock: int
+        }
+        class MedicineRequest <<dto>> {
+            - name: String
+            - description: String
+            - stock: int
+        }
+        class PrescriptionDto <<dto>> {
+            - id: Long
+            - medicineId: Long
+            - medicineName: String
+            - quantity: int
+            - usageInstructions: String
+        }
+    }
+
+    package "request" {
+        class CreateMedicalRequestDto <<dto>> {
+            - petId: Long
+            - requestTime: LocalDateTime
+            - problemDescription: String
+        }
+        class MedicalRequestDto <<dto>> {
+            - id: Long
+            - petId: Long
+            - petName: String
+            - ownerId: Long
+            - ownerName: String
+            - requestTime: LocalDateTime
+            - problemDescription: String
+            - status: MedicalRequestStatus
+        }
+        class UpdateMedicalRequestDto <<dto>> {
+            - problemDescription: String
+            - requestTime: LocalDateTime
+        }
+        class UpdateRequestStatusDto <<dto>> {
+            - status: MedicalRequestStatus
+            - doctorId: Long
+            - staffId: Long
+            - rejectionReason: String
+        }
+    }
+}
+
+package "entity" {
+    class MedicalAppointment <<entity>>
+    class MedicalRequest <<entity>>
+    class Medicine <<entity>>
+    class Prescription <<entity>>
+}
+
+package "controller" {
+    class MedicalAppointmentController <<controller>> {
+        + getAllAppointments(status: AppointmentStatus): ResponseEntity<List<MedicalAppointmentDto>>
+        + getAppointmentDetails(appointmentId: Long): ResponseEntity<MedicalAppointmentDetailDto>
+        + getOwnerAppointments(user: User, status: AppointmentStatus): ResponseEntity<List<MedicalAppointmentDto>>
+        + getDoctorAppointments(user: User, status: AppointmentStatus): ResponseEntity<List<MedicalAppointmentDto>>
+        + getAppointmentsByPetId(petId: Long): ResponseEntity<List<MedicalAppointmentDto>>
+        + getActiveAppointments(): ResponseEntity<List<MedicalAppointmentDto>>
+        + createAppointment(user: User, createDto: CreateAppointmentDto): ResponseEntity<MedicalAppointmentDto>
+        + updateAppointment(appointmentId: Long, updateDto: UpdateAppointmentDto): ResponseEntity<MedicalAppointmentDto>
+    }
+    class MedicalPrescriptionController <<controller>> {
+        + getPrescriptionsByAppointment(appointmentId: Long): ResponseEntity<List<PrescriptionDto>>
+        + addPrescription(appointmentId: Long, dto: PrescriptionDto): ResponseEntity<PrescriptionDto>
+        + addPrescriptions(appointmentId: Long, dtos: List<PrescriptionDto>): ResponseEntity<List<PrescriptionDto>>
+        + getAllMedicines(): ResponseEntity<List<MedicineDto>>
+        + createMedicine(medicineRequest: MedicineRequest): ResponseEntity<MedicineDto>
+        + updateMedicine(id: Long, updateRequest: MedicineRequest): ResponseEntity<MedicineDto>
+        + deleteMedicine(id: Long): ResponseEntity<Void>
+    }
+    class MedicalRequestController <<controller>> {
+        + createRequest(createDto: CreateMedicalRequestDto, user: User): ResponseEntity<MedicalRequestDto>
+        + getAllRequests(ownerId: Long, status: MedicalRequestStatus): ResponseEntity<List<MedicalRequestDto>>
+        + countRequests(ownerId: Long, status: MedicalRequestStatus): ResponseEntity<Long>
+        + getRequestById(requestId: Long): ResponseEntity<MedicalRequestDto>
+        + getOwnerRequests(user: User): ResponseEntity<List<MedicalRequestDto>>
+        + getPendingRequests(): ResponseEntity<List<MedicalRequestDto>>
+        + handleRequest(requestId: Long, updateDto: UpdateRequestStatusDto, user: User): ResponseEntity<MedicalRequestDto>
+        + deleteRequest(requestId: Long, user: User): ResponseEntity<Void>
+        + updateRequest(requestId: Long, updateDto: UpdateMedicalRequestDto, user: User): ResponseEntity<MedicalRequestDto>
+    }
+}
+
+package "service" {
+    interface MedicalAppointmentService
+    interface MedicalRequestService
+    interface MedicineService
+    interface PrescriptionService
+
+    class MedicalAppointmentServiceImpl <<service>>
+    class MedicalRequestServiceImpl <<service>>
+    class MedicineServiceImpl <<service>>
+    class PrescriptionServiceImpl <<service>>
+}
+
+package "repository" {
+    interface MedicalAppointmentRepository
+    interface MedicalRequestRepository
+    interface MedicineRepository
+    interface PrescriptionRepository
+}
+
+' Relationships
+MedicalAppointmentController --> MedicalAppointmentService
+MedicalAppointmentServiceImpl .up.|> MedicalAppointmentService
+MedicalAppointmentServiceImpl --> MedicalAppointmentRepository
+MedicalAppointmentServiceImpl ..> MedicalAppointment
+MedicalAppointmentServiceImpl ..> Prescription
+MedicalAppointmentController ..> CreateAppointmentDto
+MedicalAppointmentController ..> UpdateAppointmentDto
+MedicalAppointmentController ..> MedicalAppointmentDto
+MedicalAppointmentController ..> MedicalAppointmentDetailDto
+
+MedicalRequestController --> MedicalRequestService
+MedicalRequestServiceImpl .up.|> MedicalRequestService
+MedicalRequestServiceImpl --> MedicalRequestRepository
+MedicalRequestServiceImpl ..> MedicalRequest
+MedicalRequestController ..> CreateMedicalRequestDto
+MedicalRequestController ..> UpdateMedicalRequestDto
+MedicalRequestController ..> UpdateRequestStatusDto
+MedicalRequestController ..> MedicalRequestDto
+
+MedicalPrescriptionController --> PrescriptionService
+MedicalPrescriptionController --> MedicineService
+MedicalPrescriptionController --> MedicalAppointmentRepository
+PrescriptionServiceImpl .up.|> PrescriptionService
+PrescriptionServiceImpl --> PrescriptionRepository
+PrescriptionServiceImpl ..> Prescription
+MedicineServiceImpl .up.|> MedicineService
+MedicineServiceImpl --> MedicineRepository
+MedicineServiceImpl ..> Medicine
+MedicalPrescriptionController ..> PrescriptionDto
+MedicalPrescriptionController ..> MedicineDto
+MedicalPrescriptionController ..> MedicineRequest
+
+MedicalAppointment "1" -- "0..*" Prescription
+MedicalRequest "1" -- "0..1" MedicalAppointment
+Medicine "1" -- "0..*" Prescription
+
+@enduml 

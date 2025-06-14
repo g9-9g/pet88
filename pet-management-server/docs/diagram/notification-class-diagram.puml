@@ -1,0 +1,60 @@
+@startuml
+' Notification Module Class Diagram
+
+package "dto" {
+    class NotificationDTO <<dto>> {
+        - id: Long
+        - message: String
+        - status: String
+        - createdAt: LocalDateTime
+    }
+}
+
+package "entity" {
+    class Notification <<entity>> {
+        - id: Long
+        - message: String
+        - status: NotificationStatus
+        - createdAt: LocalDateTime
+    }
+    enum NotificationStatus {
+        READ
+        UNREAD
+    }
+}
+
+package "controller" {
+    class NotificationController <<controller>> {
+        + getUserNotifications(user: User): ResponseEntity<List<NotificationDTO>>
+        + markAsRead(id: Long): ResponseEntity<Void>
+        + markAllAsRead(user: User): ResponseEntity<Void>
+        + deleteNotification(id: Long): ResponseEntity<Void>
+    }
+}
+
+package "service" {
+    interface NotificationService {
+        + findByUserId(userId: Long): List<NotificationDTO>
+        + createNotification(userId: Long, message: String): NotificationDTO
+        + markAsRead(id: Long): void
+        + markAllAsRead(userId: Long): void
+        + deleteNotification(id: Long): void
+    }
+    class NotificationServiceImpl <<service>>
+}
+
+package "repository" {
+    interface NotificationRepository
+}
+
+' Relationships
+NotificationController --> NotificationService
+NotificationServiceImpl .up.|> NotificationService
+NotificationServiceImpl --> NotificationRepository
+NotificationServiceImpl ..> Notification
+NotificationController ..> NotificationDTO
+
+NotificationRepository ..> Notification
+Notification o-- NotificationStatus
+
+@enduml 

@@ -1,0 +1,58 @@
+@startuml
+' Auth Module Class Diagram
+
+' DTOs
+package "dto" {
+    class AuthRequest <<dto>> {
+        - username: String
+        - password: String
+    }
+
+    class AuthResponse <<dto>> {
+        - token: String
+        - userId: Long
+        - username: String
+        - role: String
+    }
+
+    class RegisterRequest <<dto>> {
+        - username: String
+        - password: String
+        - email: String
+        - fullName: String
+        - role: String
+    }
+}
+
+' Controller
+package "controller" {
+    class AuthController <<controller>> {
+        - authService: AuthenticationService
+        + register(request: RegisterRequest): ResponseEntity<?>
+        + authenticate(request: AuthRequest): ResponseEntity<?>
+    }
+}
+
+' Service
+package "service" {
+    interface AuthenticationService {
+        + register(request: RegisterRequest): AuthResponse
+        + authenticate(request: AuthRequest): AuthResponse
+    }
+
+    class AuthenticationServiceImpl <<service>> {
+        + register(request: RegisterRequest): AuthResponse
+        + authenticate(request: AuthRequest): AuthResponse
+    }
+}
+
+' Relationships
+AuthController --> AuthenticationService
+AuthenticationServiceImpl .up.|> AuthenticationService
+AuthController ..> RegisterRequest
+AuthController ..> AuthRequest
+AuthenticationServiceImpl ..> AuthResponse
+AuthenticationServiceImpl ..> RegisterRequest
+AuthenticationServiceImpl ..> AuthRequest
+
+@enduml 
